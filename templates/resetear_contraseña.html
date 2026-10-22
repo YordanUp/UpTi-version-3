@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Restablecer Contraseña | UPTI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo: #800000;
+            --rojo2: #a00000;
+            --rojo-dark: #5a0000;
+            --rojo-glow: rgba(128,0,0,0.12);
+            --borde: #eeddd8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0000 0%, #4a0000 50%, #800000 100%);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 28px;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.4);
+            width: 100%; max-width: 420px;
+            overflow: hidden;
+            animation: aparecer 0.5s ease;
+        }
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero */
+        .card-hero {
+            background: linear-gradient(135deg, var(--rojo-dark), var(--rojo) 60%, #c0392b);
+            padding: 40px 32px 50px;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 1px, transparent 0, transparent 50%);
+            background-size: 20px 20px;
+        }
+        .card-hero::after {
+            content: ''; position: absolute;
+            bottom: -1px; left: 0; right: 0; height: 40px;
+            background: #fff;
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+        .hero-icono {
+            width: 72px; height: 72px;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: #fff;
+            margin: 0 auto 18px;
+            backdrop-filter: blur(8px);
+        }
+        .card-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.7rem; font-weight: 900; color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2); margin-bottom: 8px;
+        }
+        .card-hero p { color: rgba(255,255,255,0.72); font-size: 0.88rem; }
+
+        /* Cuerpo */
+        .card-body { padding: 32px 36px 36px; }
+
+        /* Flash */
+        .flash {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 16px; border-radius: 12px;
+            font-size: 0.84rem; margin-bottom: 20px;
+        }
+        .flash.success { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+        .flash.danger  { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
+
+        /* Campo */
+        .campo { margin-bottom: 8px; }
+        .campo label {
+            display: block; font-size: 0.78rem; font-weight: 700;
+            color: var(--rojo); text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 8px;
+        }
+        .input-row {
+            display: flex; align-items: center;
+            background: #f8f8f8; border: 1.5px solid #e0e0e0;
+            border-radius: 50px; height: 52px;
+            padding: 0 20px; gap: 12px;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .input-row:focus-within {
+            border-color: var(--rojo); background: #fff;
+            box-shadow: 0 0 0 3px rgba(128,0,0,0.1);
+        }
+        .input-row .fi { color: var(--rojo); font-size: 16px; flex-shrink: 0; width: 18px; text-align: center; }
+        .input-row input {
+            flex: 1; border: none; background: transparent;
+            outline: none; font-size: 0.92rem; color: #333;
+            min-width: 0; height: 100%; font-family: 'DM Sans', sans-serif;
+        }
+        .input-row input::placeholder { color: #bbb; }
+        .input-row .ojo {
+            background: none; border: none; color: #ccc;
+            font-size: 15px; cursor: pointer; padding: 0;
+            flex-shrink: 0; transition: color 0.2s;
+        }
+        .input-row .ojo:hover { color: var(--rojo); }
+
+        /* Barra fortaleza */
+        .barra { margin: 8px 0 4px; }
+        .barra.show { display: block; }
+        .barra-track { height: 4px; border-radius: 2px; background: #eee; overflow: hidden; margin-bottom: 3px; }
+        .barra-fill { height: 100%; border-radius: 2px; transition: all .3s; width: 0; }
+        .barra-txt { font-size: 0.72rem; font-weight: 700; }
+        .hint { font-size: 0.75rem; color: #bbb; margin-bottom: 20px; padding-left: 4px; }
+
+        /* Botón */
+        .btn-guardar {
+            width: 100%; height: 52px; border-radius: 14px;
+            background: linear-gradient(135deg, var(--rojo), #c0392b);
+            color: #fff; border: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem; font-weight: 700; letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(128,0,0,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn-guardar:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(128,0,0,0.35); }
+        .btn-guardar:active { transform: translateY(0); }
+        .btn-guardar:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff; border-radius: 50%;
+            animation: spin 0.7s linear infinite; display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .link-volver {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            color: var(--rojo); font-size: 0.86rem; font-weight: 600;
+            text-decoration: none; transition: gap 0.2s, color 0.2s;
+        }
+        .link-volver:hover { color: var(--rojo2); gap: 12px; }
+        .link-volver i { transition: transform 0.2s; }
+        .link-volver:hover i { transform: translateX(-3px); }
+
+        @media (max-width: 480px) {
+            .card-body { padding: 24px 22px 28px; }
+            .card-hero { padding: 32px 22px 44px; }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-hero">
+        <div class="hero-icono"><i class="fas fa-lock"></i></div>
+        <h1>Restablecer Contraseña</h1>
+        <p>Crea una nueva contraseña segura para tu cuenta</p>
+    </div>
+
+    <div class="card-body">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" id="resetForm">
+            <div class="campo">
+                <label><i class="fas fa-key"></i> &nbsp;Nueva contraseña</label>
+                <div class="input-row">
+                    <i class="fas fa-key fi"></i>
+                    <input type="password" name="contraseña" id="pass"
+                           placeholder="Mínimo 8 caracteres" required minlength="8">
+                    <button type="button" class="ojo" onclick="verPass()">
+                        <i class="fas fa-eye" id="ojoIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="barra" id="barra">
+                <div class="barra-track"><div class="barra-fill" id="bfill"></div></div>
+                <span class="barra-txt" id="btxt"></span>
+            </div>
+            <div class="hint">Usa mayúsculas, números y símbolos para mayor seguridad</div>
+
+            <button type="submit" class="btn-guardar" id="btnGuardar">
+                <span id="btnTxt"><i class="fas fa-save"></i> &nbsp;Guardar contraseña</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+
+        <a href="{{ url_for('login') }}" class="link-volver">
+            <i class="fas fa-arrow-left"></i> Volver al inicio de sesión
+        </a>
+    </div>
+</div>
+
+<script>
+    function verPass() {
+        const inp = document.getElementById('pass');
+        const ico = document.getElementById('ojoIcon');
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        ico.classList.toggle('fa-eye');
+        ico.classList.toggle('fa-eye-slash');
+    }
+
+    document.getElementById('pass').addEventListener('input', function() {
+        const v = this.value;
+        const barra = document.getElementById('barra');
+        const fill  = document.getElementById('bfill');
+        const txt   = document.getElementById('btxt');
+        if (!v) { fill.style.width='0'; txt.textContent=''; return; }
+        let s = 0;
+        if (v.length >= 8) s++;
+        if (/[A-Z]/.test(v)) s++;
+        if (/[0-9]/.test(v)) s++;
+        if (/[^A-Za-z0-9]/.test(v)) s++;
+        const n = [
+            {w:'25%', c:'#e74c3c', t:'Muy débil'},
+            {w:'50%', c:'#e67e22', t:'Débil'},
+            {w:'75%', c:'#f1c40f', t:'Buena'},
+            {w:'100%',c:'#27ae60', t:'Fuerte'}
+        ][s-1] || {w:'25%', c:'#e74c3c', t:'Muy débil'};
+        fill.style.width = n.w;
+        fill.style.background = n.c;
+        txt.textContent = n.t;
+        txt.style.color = n.c;
+    });
+
+    document.getElementById('resetForm').addEventListener('submit', function() {
+        const btn = document.getElementById('btnGuardar');
+        const txt = document.getElementById('btnTxt');
+        const sp  = document.getElementById('spinner');
+        btn.disabled = true;
+        txt.style.display = 'none';
+        sp.style.display = 'block';
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!-- ═══════════════════════════════════════════
+     CHAT IA FLOTANTE — UPTI
+     justo antes del </body> en cada template
+════════════════════════════════════════════ -->
+<style>
+    /* ── Botón flotante ── */
+    #ia-fab {
+        position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+        width: 58px; height: 58px; border-radius: 50%;
+        background: linear-gradient(135deg, #800000, #c0392b);
+        border: none; cursor: pointer;
+        box-shadow: 0 6px 24px rgba(128,0,0,0.38);
+        display: flex; align-items: center; justify-content: center;
+        transition: transform 0.25s, box-shadow 0.25s;
+        color: #fff; font-size: 22px;
+    }
+    #ia-fab:hover { transform: scale(1.1) translateY(-2px); box-shadow: 0 10px 30px rgba(128,0,0,0.45); }
+    #ia-fab .ia-fab-badge {
+        position: absolute; top: -3px; right: -3px;
+        width: 18px; height: 18px; border-radius: 50%;
+        background: #fff; border: 2px solid #800000;
+        font-size: 9px; font-weight: 800; color: #800000;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── Panel del chat ── */
+    #ia-panel {
+        position: fixed; bottom: 98px; right: 28px; z-index: 9998;
+        width: 360px; max-height: 520px;
+        background: #fff; border-radius: 22px;
+        border: 1px solid #eeddd8;
+        box-shadow: 0 16px 48px rgba(128,0,0,0.18);
+        display: flex; flex-direction: column;
+        overflow: hidden;
+        transform: scale(0.85) translateY(20px);
+        opacity: 0; pointer-events: none;
+        transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), opacity 0.2s;
+        transform-origin: bottom right;
+    }
+    #ia-panel.open {
+        transform: scale(1) translateY(0);
+        opacity: 1; pointer-events: all;
+    }
+
+    /* ── Header ── */
+    .ia-header {
+        background: linear-gradient(135deg, #5a0000, #800000);
+        padding: 14px 18px; display: flex; align-items: center; gap: 10px;
+        flex-shrink: 0;
+    }
+    .ia-header-icon {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 17px; color: #fff; flex-shrink: 0;
+    }
+    .ia-header-info { flex: 1; }
+    .ia-header-name { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: #fff; }
+    .ia-header-status { font-size: 0.72rem; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 5px; }
+    .ia-dot { width: 6px; height: 6px; border-radius: 50%; background: #2ecc71; display: inline-block; animation: pulse-dot 2s infinite; }
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .ia-header-close { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 16px; padding: 4px; transition: color 0.2s; }
+    .ia-header-close:hover { color: #fff; }
+    .ia-header-clear { background: none; border: none; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 12px; padding: 4px 8px; border-radius: 50px; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+    .ia-header-clear:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+    /* ── Mensajes ── */
+    .ia-messages {
+        flex: 1; overflow-y: auto; padding: 16px;
+        display: flex; flex-direction: column; gap: 10px;
+        scroll-behavior: smooth;
+    }
+    .ia-messages::-webkit-scrollbar { width: 4px; }
+    .ia-messages::-webkit-scrollbar-track { background: transparent; }
+    .ia-messages::-webkit-scrollbar-thumb { background: #eeddd8; border-radius: 4px; }
+
+    .ia-msg { display: flex; gap: 8px; max-width: 88%; }
+    .ia-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+    .ia-msg.bot { align-self: flex-start; }
+
+    .ia-msg-avatar {
+        width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px; margin-top: 2px;
+    }
+    .ia-msg.bot .ia-msg-avatar { background: linear-gradient(135deg, #800000, #c0392b); color: #fff; }
+    .ia-msg.user .ia-msg-avatar { background: #f0ece8; color: #800000; font-size: 11px; overflow: hidden; }
+    .ia-msg.user .ia-msg-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+    .ia-msg-bubble {
+        padding: 10px 14px; border-radius: 16px;
+        font-family: 'DM Sans', sans-serif; font-size: 0.84rem; line-height: 1.55;
+    }
+    .ia-msg.bot .ia-msg-bubble {
+        background: #f8f4f2; color: #2a1a1a; border-bottom-left-radius: 4px;
+    }
+    .ia-msg.user .ia-msg-bubble {
+        background: linear-gradient(135deg, #800000, #a00000);
+        color: #fff; border-bottom-right-radius: 4px;
+    }
+    .ia-msg-bubble strong { font-weight: 700; }
+    .ia-msg-bubble ul { padding-left: 16px; margin: 4px 0; }
+    .ia-msg-bubble li { margin-bottom: 2px; }
+
+    /* Typing indicator */
+    .ia-typing .ia-msg-bubble { padding: 12px 16px; }
+    .ia-typing-dots { display: flex; gap: 4px; align-items: center; }
+    .ia-typing-dots span {
+        width: 7px; height: 7px; border-radius: 50%; background: #aaa;
+        animation: typing-bounce 1.2s infinite;
+    }
+    .ia-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .ia-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing-bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+    /* Bienvenida */
+    .ia-welcome {
+        text-align: center; padding: 10px 8px 4px;
+    }
+    .ia-welcome-icon { font-size: 32px; margin-bottom: 6px; }
+    .ia-welcome-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: #800000; margin-bottom: 4px; }
+    .ia-welcome-sub { font-size: 0.78rem; color: #888; line-height: 1.5; }
+
+    /* Sugerencias rápidas */
+    .ia-suggestions { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 10px; flex-shrink: 0; }
+    .ia-sug-btn {
+        background: #f8f4f2; border: 1.5px solid #eeddd8;
+        border-radius: 50px; padding: 5px 12px;
+        font-size: 0.75rem; font-weight: 600; color: #800000;
+        cursor: pointer; font-family: 'DM Sans', sans-serif;
+        transition: all 0.2s; white-space: nowrap;
+    }
+    .ia-sug-btn:hover { background: #800000; color: #fff; border-color: #800000; }
+
+    /* ── Input ── */
+    .ia-input-area {
+        padding: 12px 14px; border-top: 1px solid #eeddd8;
+        display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
+        background: #fff;
+    }
+    .ia-input-area textarea {
+        flex: 1; border: 1.5px solid #e8e8e8; border-radius: 14px;
+        padding: 9px 14px; font-family: 'DM Sans', sans-serif;
+        font-size: 0.84rem; color: #333; resize: none; outline: none;
+        max-height: 100px; overflow-y: auto; line-height: 1.5;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .ia-input-area textarea:focus { border-color: #800000; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+    .ia-input-area textarea::placeholder { color: #bbb; }
+    .ia-send-btn {
+        width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+        background: linear-gradient(135deg, #800000, #c0392b);
+        border: none; color: #fff; cursor: pointer; font-size: 15px;
+        display: flex; align-items: center; justify-content: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 3px 10px rgba(128,0,0,0.25);
+    }
+    .ia-send-btn:hover { transform: scale(1.08); box-shadow: 0 5px 14px rgba(128,0,0,0.35); }
+    .ia-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Markdown rendering */
+    .ia-msg-bubble p { margin: 0 0 4px; }
+    .ia-msg-bubble h1,.ia-msg-bubble h2,.ia-msg-bubble h3 { font-size: 0.88rem; margin: 6px 0 3px; }
+
+    @media (max-width: 480px) {
+        #ia-panel { width: calc(100vw - 32px); right: 16px; bottom: 88px; }
+        #ia-fab { bottom: 20px; right: 16px; }
+    }
+</style>
+
+<!-- Botón flotante -->
+<button id="ia-fab" onclick="iaToggle()" title="Asistente IA">
+    <i class="fas fa-robot" id="ia-fab-icon"></i>
+    <div class="ia-fab-badge">IA</div>
+</button>
+
+<!-- Panel -->
+<div id="ia-panel">
+    <div class="ia-header">
+        <div class="ia-header-icon"><i class="fas fa-robot"></i></div>
+        <div class="ia-header-info">
+            <div class="ia-header-name">Asistente UPTI</div>
+            <div class="ia-header-status"><span class="ia-dot"></span> En línea</div>
+        </div>
+        <button class="ia-header-clear" onclick="iaClear()" title="Limpiar chat">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+        <button class="ia-header-close" onclick="iaToggle()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="ia-messages" id="ia-messages">
+        <div class="ia-welcome">
+            <div class="ia-welcome-icon">🎓</div>
+            <div class="ia-welcome-title">¡Hola! Soy tu asistente académico</div>
+            <div class="ia-welcome-sub">Puedo ayudarte con tus materias,<br>explicar conceptos y más.</div>
+        </div>
+    </div>
+
+    <div class="ia-suggestions" id="ia-suggestions">
+        <button class="ia-sug-btn" onclick="iaQuick('¿Cómo puedo mejorar mis apuntes?')">📝 Apuntes</button>
+        <button class="ia-sug-btn" onclick="iaQuick('Dame técnicas de estudio efectivas')">📚 Técnicas</button>
+        <button class="ia-sug-btn" onclick="iaQuick('¿Cómo preparar un examen?')">✏️ Exámenes</button>
+        <button class="ia-sug-btn" onclick="iaQuick('Explícame qué es la programación orientada a objetos')">💻 POO</button>
+    </div>
+
+    <div class="ia-input-area">
+        <textarea id="ia-input" placeholder="Escribe tu pregunta..." rows="1"
+                  onkeydown="iaKeydown(event)" oninput="iaAutoResize(this)"></textarea>
+        <button class="ia-send-btn" id="ia-send" onclick="iaSend()">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+(function() {
+    let historial = [];
+    let panelAbierto = false;
+
+    window.iaToggle = function() {
+        panelAbierto = !panelAbierto;
+        document.getElementById('ia-panel').classList.toggle('open', panelAbierto);
+        const icon = document.getElementById('ia-fab-icon');
+        icon.className = panelAbierto ? 'fas fa-times' : 'fas fa-robot';
+        if (panelAbierto) {
+            setTimeout(() => document.getElementById('ia-input').focus(), 300);
+        }
+    };
+
+    window.iaClear = function() {
+        historial = [];
+        const msgs = document.getElementById('ia-messages');
+        msgs.innerHTML = `
+            <div class="ia-welcome">
+                <div class="ia-welcome-icon">🎓</div>
+                <div class="ia-welcome-title">¡Hola! Soy tu asistente académico</div>
+                <div class="ia-welcome-sub">Puedo ayudarte con tus materias,<br>explicar conceptos y más.</div>
+            </div>`;
+        document.getElementById('ia-suggestions').style.display = 'flex';
+    };
+
+    window.iaQuick = function(texto) {
+        document.getElementById('ia-input').value = texto;
+        document.getElementById('ia-suggestions').style.display = 'none';
+        iaSend();
+    };
+
+    window.iaKeydown = function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            iaSend();
+        }
+    };
+
+    window.iaAutoResize = function(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+    };
+
+    function iaAgregarMensaje(rol, texto) {
+        const msgs = document.getElementById('ia-messages');
+        const div = document.createElement('div');
+        div.className = `ia-msg ${rol}`;
+
+        const avatarHTML = rol === 'bot'
+            ? `<div class="ia-msg-avatar"><i class="fas fa-robot"></i></div>`
+            : `<div class="ia-msg-avatar">
+                {% if usuario is defined and usuario %}
+                <img src="{{ url_for('static', filename='perfiles/' + usuario.imagen_perfil) }}" alt="">
+                {% else %}
+                <i class="fas fa-user"></i>
+                {% endif %}
+               </div>`;
+
+        div.innerHTML = `${avatarHTML}<div class="ia-msg-bubble">${iaFormatear(texto)}</div>`;
+        msgs.appendChild(div);
+        msgs.scrollTop = msgs.scrollHeight;
+        return div;
+    }
+
+    function iaFormatear(texto) {
+        // Markdown básico
+        return texto
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>')
+            .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+            .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+            .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+            .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
+            .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>');
+    }
+
+    function iaTyping() {
+        const msgs = document.getElementById('ia-messages');
+        const div = document.createElement('div');
+        div.className = 'ia-msg bot ia-typing';
+        div.id = 'ia-typing';
+        div.innerHTML = `<div class="ia-msg-avatar"><i class="fas fa-robot"></i></div>
+            <div class="ia-msg-bubble"><div class="ia-typing-dots"><span></span><span></span><span></span></div></div>`;
+        msgs.appendChild(div);
+        msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    window.iaSend = async function() {
+        const input = document.getElementById('ia-input');
+        const mensaje = input.value.trim();
+        if (!mensaje) return;
+
+        document.getElementById('ia-suggestions').style.display = 'none';
+        input.value = '';
+        input.style.height = 'auto';
+        document.getElementById('ia-send').disabled = true;
+
+        iaAgregarMensaje('user', mensaje);
+        historial.push({ role: 'user', text: mensaje });
+        iaTyping();
+
+        try {
+            const res = await fetch('/ia/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensaje, historial: historial.slice(-10) })
+            });
+            const data = await res.json();
+
+            const typing = document.getElementById('ia-typing');
+            if (typing) typing.remove();
+
+            if (data.respuesta) {
+                iaAgregarMensaje('bot', data.respuesta);
+                historial.push({ role: 'bot', text: data.respuesta });
+            } else {
+                iaAgregarMensaje('bot', '⚠️ Ocurrió un error. Intenta de nuevo.');
+            }
+        } catch (e) {
+            const typing = document.getElementById('ia-typing');
+            if (typing) typing.remove();
+            iaAgregarMensaje('bot', '⚠️ No se pudo conectar con el asistente.');
+        }
+
+        document.getElementById('ia-send').disabled = false;
+        input.focus();
+    };
+})();
+</script>

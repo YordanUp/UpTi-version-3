@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tema.titulo }} | UPTI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo: #800000;
+            --rojo2: #a00000;
+            --rojo-dark: #5a0000;
+            --rojo-glow: rgba(128,0,0,0.10);
+            --bg: #faf7f5;
+            --card: #ffffff;
+            --texto: #1a1a1a;
+            --texto2: #666;
+            --borde: #eeddd8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--texto);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 10% 10%, rgba(128,0,0,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 90%, rgba(128,0,0,0.03) 0%, transparent 50%);
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            background: #fff; border-bottom: 1px solid var(--borde);
+            padding: 0 40px; height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 200;
+            box-shadow: 0 2px 20px rgba(128,0,0,0.06);
+        }
+        .navbar-left { display: flex; align-items: center; gap: 20px; }
+        .navbar-logo { height: 46px; transition: transform 0.3s; }
+        .navbar-logo:hover { transform: scale(1.05); }
+        .btn-volver {
+            display: inline-flex; align-items: center; gap: 7px;
+            height: 38px; padding: 0 16px; border-radius: 50px;
+            font-size: 0.84rem; font-weight: 600; text-decoration: none;
+            background: var(--rojo-glow); color: var(--rojo);
+            border: 1.5px solid var(--borde); transition: all 0.2s;
+        }
+        .btn-volver:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+        .navbar-right { display: flex; align-items: center; gap: 10px; }
+        .nav-btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            height: 38px; padding: 0 16px; border-radius: 50px;
+            font-size: 0.84rem; font-weight: 600; text-decoration: none;
+            transition: all 0.2s; border: 1.5px solid transparent;
+        }
+        .nav-btn.subir { background: var(--rojo); color: #fff; box-shadow: 0 3px 10px rgba(128,0,0,0.25); }
+        .nav-btn.subir:hover { background: var(--rojo2); transform: translateY(-1px); }
+
+        /* ── HERO TEMA ── */
+        .tema-hero {
+            background: linear-gradient(135deg, var(--rojo-dark), var(--rojo) 60%, #c0392b);
+            padding: 48px 40px 64px;
+            position: relative; overflow: hidden;
+        }
+        .tema-hero::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 1px, transparent 0, transparent 50%);
+            background-size: 20px 20px;
+        }
+        .tema-hero::after {
+            content: ''; position: absolute;
+            bottom: -1px; left: 0; right: 0; height: 50px;
+            background: var(--bg);
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+        .hero-inner { max-width: 860px; margin: 0 auto; position: relative; }
+        .autor-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .autor-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2.5px solid rgba(255,255,255,0.7); cursor: pointer; transition: transform 0.2s; }
+        .autor-avatar:hover { transform: scale(1.08); }
+        .autor-info { color: rgba(255,255,255,0.85); font-size: 0.88rem; }
+        .autor-nombre { font-weight: 700; color: #fff; cursor: pointer; }
+        .autor-nombre:hover { text-decoration: underline; }
+        .autor-fecha { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+        .tema-titulo {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 900; color: #fff;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            line-height: 1.25; margin-bottom: 20px;
+        }
+        .tema-acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-accion {
+            display: inline-flex; align-items: center; gap: 7px;
+            height: 36px; padding: 0 16px; border-radius: 50px;
+            font-size: 0.82rem; font-weight: 600;
+            border: none; cursor: pointer; text-decoration: none; transition: all 0.2s;
+        }
+        .btn-accion.editar { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+        .btn-accion.editar:hover { background: rgba(255,255,255,0.35); color: #fff; }
+        .btn-accion.eliminar { background: rgba(220,53,69,0.25); color: #ff8a8a; border: 1px solid rgba(220,53,69,0.3); }
+        .btn-accion.eliminar:hover { background: rgba(220,53,69,0.4); }
+
+        /* ── CARDS ── */
+        .page-body { max-width: 860px; margin: 0 auto; padding: 40px 20px 60px; }
+        .scard { background: var(--card); border-radius: 20px; border: 1px solid var(--borde); box-shadow: 0 4px 20px rgba(128,0,0,0.06); margin-bottom: 28px; overflow: hidden; }
+        .scard-header {
+            padding: 18px 28px; border-bottom: 1px solid var(--borde);
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.8rem; font-weight: 700; color: var(--rojo);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .scard-header .badge-count { background: var(--rojo-glow); color: var(--rojo); border-radius: 50px; padding: 2px 10px; font-size: 0.72rem; }
+        .scard-body { padding: 28px; }
+
+        /* ── BOTÓN IA EN HEADER ── */
+        .btn-ia-resumir {
+            margin-left: auto;
+            display: inline-flex; align-items: center; gap: 6px;
+            height: 30px; padding: 0 14px; border-radius: 50px;
+            background: linear-gradient(135deg, var(--rojo-dark), var(--rojo));
+            color: #fff; border: none; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem; font-weight: 700;
+            box-shadow: 0 3px 10px rgba(128,0,0,0.3);
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+            text-transform: none; letter-spacing: 0;
+        }
+        .btn-ia-resumir:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(128,0,0,0.4); }
+        .btn-ia-resumir:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+        .btn-ia-resumir .ia-spin { display: none; animation: girando 0.7s linear infinite; }
+        .btn-ia-resumir.cargando .ia-spin { display: inline; }
+        .btn-ia-resumir.cargando .ia-icon { display: none; }
+        @keyframes girando { to { transform: rotate(360deg); } }
+
+        /* ── MODAL IA ── */
+        .modal-ia-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 600;
+            align-items: center; justify-content: center;
+            backdrop-filter: blur(4px); padding: 20px;
+        }
+        .modal-ia-overlay.active { display: flex; }
+        .modal-ia-box {
+            background: #fff; border-radius: 24px;
+            width: 100%; max-width: 560px; max-height: 85vh;
+            display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.35);
+            animation: iaModalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes iaModalIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+
+        .modal-ia-head {
+            background: linear-gradient(135deg, var(--rojo-dark), var(--rojo));
+            padding: 20px 24px;
+            display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+        }
+        .modal-ia-head-icon {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: #fff; flex-shrink: 0;
+        }
+        .modal-ia-head-info { flex: 1; min-width: 0; }
+        .modal-ia-head-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: #fff; }
+        .modal-ia-head-sub { font-size: 0.74rem; color: rgba(255,255,255,0.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .modal-ia-close {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); border: none;
+            color: #fff; font-size: 14px; cursor: pointer; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+        }
+        .modal-ia-close:hover { background: rgba(255,255,255,0.35); }
+
+        .modal-ia-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-ia-body::-webkit-scrollbar { width: 5px; }
+        .modal-ia-body::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 4px; }
+
+        /* Loading dots */
+        .ia-loading { text-align: center; padding: 40px 20px; }
+        .ia-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+        .ia-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--rojo); animation: bote 1.2s infinite; }
+        .ia-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .ia-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bote { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-10px)} }
+        .ia-loading p { color: var(--texto2); font-size: 0.88rem; }
+
+        /* Contenido resumen */
+        .ia-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--rojo-glow); color: var(--rojo); border: 1px solid var(--borde); border-radius: 50px; padding: 4px 12px; font-size: 0.72rem; font-weight: 700; margin-bottom: 16px; }
+        .resumen-md { font-size: 0.92rem; line-height: 1.72; color: var(--texto); }
+        .resumen-md strong { color: var(--rojo-dark); font-weight: 700; }
+        .resumen-md h1,.resumen-md h2,.resumen-md h3 { font-family: 'Playfair Display', serif; color: var(--rojo-dark); margin: 14px 0 6px; }
+        .resumen-md h1 { font-size: 1.1rem; }
+        .resumen-md h2 { font-size: 1rem; }
+        .resumen-md h3 { font-size: 0.95rem; }
+        .resumen-md ul,.resumen-md ol { padding-left: 20px; margin: 8px 0; }
+        .resumen-md li { margin-bottom: 5px; }
+        .resumen-md p { margin-bottom: 10px; }
+
+        .modal-ia-foot {
+            padding: 14px 24px; border-top: 1px solid var(--borde);
+            display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0;
+        }
+        .btn-ia-copiar {
+            display: inline-flex; align-items: center; gap: 6px;
+            height: 36px; padding: 0 16px; border-radius: 50px;
+            background: var(--rojo-glow); color: var(--rojo);
+            border: 1.5px solid var(--borde);
+            font-size: 0.82rem; font-weight: 600; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+        }
+        .btn-ia-copiar:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+        .btn-ia-cerrar {
+            display: inline-flex; align-items: center; gap: 6px;
+            height: 36px; padding: 0 16px; border-radius: 50px;
+            background: #f0f0f0; color: #555; border: none;
+            font-size: 0.82rem; font-weight: 600; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+        }
+        .btn-ia-cerrar:hover { background: #555; color: #fff; }
+
+        /* ── RESTO ── */
+        .tema-texto { font-size: 1rem; line-height: 1.75; color: var(--texto); white-space: pre-wrap; }
+        .contenido-limitado { max-height: 200px; overflow: hidden; position: relative; }
+        .contenido-limitado::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(transparent, var(--card)); }
+        .contenido-completo { max-height: none; }
+        .contenido-completo::after { display: none; }
+        .btn-leer { background: none; border: none; cursor: pointer; color: var(--rojo); font-size: 0.84rem; font-weight: 700; padding: 8px 0; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s; font-family: 'DM Sans', sans-serif; }
+        .btn-leer:hover { color: var(--rojo2); }
+        .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); margin: 20px 0; }
+        .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .archivo-item { padding: 22px 0; border-bottom: 1px solid #f5f0ee; }
+        .archivo-item:last-child { border-bottom: none; }
+        .archivo-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+        .file-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+        .archivo-meta { flex: 1; }
+        .archivo-nombre { font-weight: 700; font-size: 0.98rem; color: var(--texto); margin-bottom: 3px; }
+        .archivo-subido { font-size: 0.78rem; color: var(--texto2); }
+        .archivo-subido a { color: var(--rojo); font-weight: 600; text-decoration: none; cursor: pointer; }
+        .archivo-subido a:hover { text-decoration: underline; }
+        .btn-lapiz { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; background: var(--rojo-glow); color: var(--rojo); border: 1px solid var(--borde); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; transition: all 0.2s; vertical-align: middle; }
+        .btn-lapiz:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+        .archivo-desc { background: #fdf9f8; border-left: 3px solid var(--rojo); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 0.9rem; line-height: 1.6; color: var(--texto); margin: 0 0 14px 0; white-space: pre-wrap; }
+        .editar-desc-form { margin: 14px 0; display: none; }
+        .editar-desc-form textarea { width: 100%; min-height: 90px; resize: vertical; border: 1.5px solid #e0e0e0; border-radius: 12px; padding: 12px 16px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; background: #f8f8f8; margin-bottom: 10px; }
+        .editar-desc-form textarea:focus { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+        .editar-btns { display: flex; gap: 8px; }
+        .btn-guardar-desc { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 50px; background: var(--rojo); color: #fff; border: none; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+        .btn-guardar-desc:hover { background: var(--rojo2); }
+        .btn-cancelar-desc { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 50px; background: #f0f0f0; color: #555; border: none; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+        .btn-cancelar-desc:hover { background: #e0e0e0; }
+        .office-notice { background: #fff8e6; border-left: 3px solid #ffc107; border-radius: 0 10px 10px 0; padding: 10px 14px; font-size: 0.85rem; color: #8a6914; display: flex; align-items: center; gap: 8px; margin: 12px 0; }
+        .archivo-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .arch-btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; text-decoration: none; background: var(--rojo-glow); color: var(--rojo); border: 1px solid var(--borde); transition: all 0.2s; cursor: pointer; }
+        .arch-btn:hover { background: var(--rojo); color: #fff; }
+        .arch-btn.danger { background: rgba(220,53,69,0.08); color: #dc3545; border: 1px solid rgba(220,53,69,0.2); }
+        .arch-btn.danger:hover { background: #dc3545; color: #fff; }
+        .preview-container { border-radius: 12px; overflow: hidden; margin: 12px 0; box-shadow: 0 3px 12px rgba(0,0,0,0.1); }
+        .preview-container embed { width: 100%; height: 480px; border: none; display: block; }
+        .preview-container img { max-width: 100%; max-height: 480px; display: block; margin: 0 auto; }
+        .enlace-card { display: flex; align-items: center; gap: 14px; border-radius: 14px; padding: 0; margin: 12px 0; text-decoration: none; transition: all 0.2s; overflow: hidden; border: 1.5px solid var(--borde); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .enlace-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+        .enlace-card-icon { width: 64px; min-width: 64px; align-self: stretch; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0; }
+        .enlace-card-info { flex: 1; padding: 12px 16px 12px 0; min-width: 0; }
+        .enlace-card-marca { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; opacity: 0.7; }
+        .enlace-card-url { font-size: 0.84rem; font-weight: 600; word-break: break-all; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .enlace-card-sub { font-size: 0.73rem; opacity: 0.6; display: flex; align-items: center; gap: 5px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--texto2); }
+        .empty-state i { font-size: 2.5rem; color: #ddd; display: block; margin-bottom: 12px; }
+        .empty-state p { margin-bottom: 6px; }
+        .comentario-item { display: flex; gap: 14px; padding: 18px 0; border-bottom: 1px solid #f5f0ee; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .comentario-item:last-child { border-bottom: none; }
+        .com-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--borde); flex-shrink: 0; cursor: pointer; transition: transform 0.2s; }
+        .com-avatar:hover { transform: scale(1.08); }
+        .com-body { flex: 1; }
+        .com-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .com-autor { font-weight: 700; font-size: 0.9rem; color: var(--rojo); text-decoration: none; cursor: pointer; }
+        .com-autor:hover { text-decoration: underline; }
+        .com-fecha { font-size: 0.75rem; color: var(--texto2); }
+        .com-texto { font-size: 0.92rem; line-height: 1.65; white-space: pre-wrap; color: var(--texto); }
+        .btn-del-com { background: none; border: none; cursor: pointer; color: #ccc; font-size: 0.78rem; padding: 4px 0; margin-top: 6px; font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 5px; transition: color 0.2s; }
+        .btn-del-com:hover { color: #dc3545; }
+        .form-comentar label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--rojo); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .form-comentar textarea { width: 100%; min-height: 110px; resize: vertical; border: 1.5px solid #e0e0e0; border-radius: 14px; padding: 14px 18px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; outline: none; background: #f8f8f8; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; margin-bottom: 12px; }
+        .form-comentar textarea:focus { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+        .btn-comentar { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 24px; border-radius: 50px; background: linear-gradient(135deg, var(--rojo), #c0392b); color: #fff; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(128,0,0,0.25); transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-comentar:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(128,0,0,0.3); }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: #fff; border-radius: 24px; width: 90%; max-width: 380px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); overflow: hidden; animation: modalIn 0.3s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+        .modal-hero { background: linear-gradient(135deg, var(--rojo-dark), var(--rojo)); padding: 32px 24px 50px; text-align: center; position: relative; }
+        .modal-hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 36px; background: #fff; clip-path: ellipse(55% 100% at 50% 100%); }
+        .modal-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(255,255,255,0.8); box-shadow: 0 6px 20px rgba(0,0,0,0.2); margin-bottom: 14px; }
+        .modal-nombre { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .modal-correo { color: rgba(255,255,255,0.7); font-size: 0.82rem; }
+        .modal-info { padding: 12px 24px 24px; }
+        .modal-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f5f0ee; }
+        .modal-item:last-child { border-bottom: none; }
+        .modal-item-icon { width: 36px; height: 36px; background: var(--rojo-glow); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--rojo); font-size: 14px; flex-shrink: 0; }
+        .modal-item-label { font-size: 0.72rem; font-weight: 700; color: var(--rojo); text-transform: uppercase; letter-spacing: 0.5px; }
+        .modal-item-value { font-size: 0.88rem; font-weight: 600; color: var(--texto); }
+        .modal-item-value.vacio { color: #bbb; font-style: italic; font-weight: 400; }
+        .modal-close { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .modal-close:hover { background: rgba(255,255,255,0.35); }
+        .modal-loading { padding: 40px; text-align: center; color: var(--texto2); }
+        .modal-loading i { font-size: 2rem; color: var(--rojo); margin-bottom: 10px; display: block; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .page-footer { text-align: center; padding: 24px; font-size: 0.78rem; color: #bbb; border-top: 1px solid var(--borde); }
+        @media (max-width: 700px) {
+            .navbar { padding: 0 16px; }
+            .tema-hero { padding: 32px 20px 52px; }
+            .page-body { padding: 28px 16px 40px; }
+            .scard-body { padding: 20px; }
+            .scard-header { padding: 14px 20px; }
+        }
+        .navbar-search { display: flex; align-items: center; background: #f8f8f8; border: 1.5px solid #e0e0e0; border-radius: 50px; height: 38px; padding: 0 16px; gap: 8px; transition: all 0.2s; width: 260px; }
+        .navbar-search:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); width: 300px; }
+        .navbar-search i.si { color: var(--rojo); font-size: 13px; flex-shrink: 0; }
+        .navbar-search input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.86rem; color: #333; font-family: 'DM Sans', sans-serif; }
+        .navbar-search input::placeholder { color: #bbb; }
+        .navbar-search button { border: none; background: none; cursor: pointer; color: var(--rojo); font-size: 13px; padding: 0; display: flex; align-items: center; }
+        .reac-wrap { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f5f0ee; }
+        .reac-trigger-wrap { position: relative; }
+        .btn-reac-main { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 16px; border-radius: 6px; font-size: 0.88rem; font-weight: 700; border: 1.5px solid #e0e0e0; background: #fff; cursor: pointer; color: #555; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+        .btn-reac-main:hover { background: #f0f0f0; }
+        .btn-reac-main.activo { color: var(--rojo); border-color: var(--rojo); background: var(--rojo-glow); }
+        .reac-popup { display: none; position: absolute; bottom: calc(100% + 10px); left: 0; background: #fff; border-radius: 50px; box-shadow: 0 4px 20px rgba(0,0,0,0.18); border: 1px solid #eee; padding: 8px 12px; gap: 4px; flex-direction: row; align-items: center; z-index: 300; white-space: nowrap; animation: popupIn 0.15s ease; }
+        .reac-popup.visible { display: flex; }
+        @keyframes popupIn { from { opacity: 0; transform: scale(0.8) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .reac-popup-btn { background: none; border: none; cursor: pointer; font-size: 1.6rem; padding: 2px 4px; border-radius: 50%; transition: transform 0.12s; line-height: 1; position: relative; }
+        .reac-popup-btn:hover { transform: scale(1.5) translateY(-4px); }
+        .reac-popup-btn.activo { transform: scale(1.2); filter: drop-shadow(0 0 3px rgba(128,0,0,0.4)); }
+        .reac-popup-btn .reac-tooltip { display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #333; color: #fff; border-radius: 6px; padding: 3px 8px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; pointer-events: none; font-family: 'DM Sans', sans-serif; }
+        .reac-popup-btn:hover .reac-tooltip { display: block; }
+        .reac-conteos { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex: 1; }
+        .reac-chip { display: inline-flex; align-items: center; gap: 4px; background: #f5f5f5; border: 1px solid #e8e0de; border-radius: 50px; padding: 3px 10px; font-size: 0.8rem; color: #666; font-weight: 600; transition: all 0.15s; }
+        .reac-chip.mia { border-color: var(--rojo); background: var(--rojo-glow); color: var(--rojo); }
+    </style>
+</head>
+<body>
+{% macro reacciones(tipo, obj_id) %}
+{% set emojis = [('👍','Me gusta'),('❤️','Me encanta'),('🔥','Útil'),('🧠','Aprendí'),('🎯','Al punto'),('😕','Confuso'),('👎','No ayuda'),('❌','Incorrecto')] %}
+{% set mi_reac = namespace(emoji=None, label=None) %}
+{% for e, l in emojis %}{% if (tipo, obj_id, e) in mis_reacciones_set and not mi_reac.emoji %}{% set mi_reac.emoji = e %}{% set mi_reac.label = l %}{% endif %}{% endfor %}
+<div class="reac-wrap" id="reac-{{ tipo }}-{{ obj_id }}">
+    <div class="reac-trigger-wrap">
+        <button class="btn-reac-main {% if mi_reac.emoji %}activo{% endif %}"
+                onmouseenter="mostrarPopup('{{ tipo }}', {{ obj_id }})"
+                onmouseleave="iniciarCierrePopup('{{ tipo }}', {{ obj_id }})"
+                onclick="togglePopup('{{ tipo }}', {{ obj_id }}, this)">
+            {% if mi_reac.emoji %}{{ mi_reac.emoji }} {{ mi_reac.label }}
+            {% else %}👍 Me gusta{% endif %}
+        </button>
+        <div class="reac-popup" id="popup-{{ tipo }}-{{ obj_id }}"
+             onmouseenter="cancelarCierre('{{ tipo }}', {{ obj_id }})"
+             onmouseleave="iniciarCierrePopup('{{ tipo }}', {{ obj_id }})">
+            {% for emoji, label in emojis %}
+            {% set activo = (tipo, obj_id, emoji) in mis_reacciones_set %}
+            <button class="reac-popup-btn {% if activo %}activo{% endif %}"
+                    onclick="reaccionar('{{ tipo }}', {{ obj_id }}, '{{ emoji }}', '{{ label }}', this)">
+                {{ emoji }}
+                <span class="reac-tooltip">{{ label }}</span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="reac-conteos" id="conteos-{{ tipo }}-{{ obj_id }}">
+        {% for emoji, label in emojis %}
+        {% set count = conteos.get((tipo, obj_id, emoji), 0) %}
+        {% set activo = (tipo, obj_id, emoji) in mis_reacciones_set %}
+        {% if count > 0 %}
+        <span class="reac-chip {% if activo %}mia{% endif %}" data-emoji="{{ emoji }}">{{ emoji }} <span class="chip-count">{{ count }}</span></span>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endmacro %}
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="{{ url_for('inicio') }}">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="UPTI" class="navbar-logo">
+        </a>
+        <form action="{{ url_for('buscar') }}" method="GET" class="navbar-search">
+            <i class="fas fa-search si"></i>
+            <input type="text" name="q" placeholder="Buscar temas, archivos..." autocomplete="off">
+            <button type="submit"><i class="fas fa-arrow-right"></i></button>
+        </form>
+        <a href="{{ url_for('ver_materia', materia_id=tema.materia_id) }}" class="btn-volver">
+            <i class="fas fa-arrow-left"></i> Volver a materia
+        </a>
+    </div>
+    <div class="navbar-right">
+        <a href="{{ url_for('subir_archivo', tema_id=tema.id) }}" class="nav-btn subir">
+            <i class="fas fa-upload"></i> Subir archivo
+        </a>
+    </div>
+</nav>
+
+<!-- Hero del tema -->
+<div class="tema-hero">
+    <div class="hero-inner">
+        <div class="autor-row">
+            <img src="{{ url_for('static', filename='perfiles/' + tema.autor.imagen_perfil) }}"
+                 alt="{{ tema.autor.nombre_usuario }}" class="autor-avatar ver-perfil"
+                 data-usuario-id="{{ tema.autor.id }}" data-nombre="{{ tema.autor.nombre_usuario }}">
+            <div class="autor-info">
+                <div class="autor-nombre ver-perfil" data-usuario-id="{{ tema.autor.id }}" data-nombre="{{ tema.autor.nombre_usuario }}">
+                    {{ tema.autor.nombre_usuario }}
+                </div>
+                <div class="autor-fecha">{{ tema.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</div>
+            </div>
+        </div>
+        <h1 class="tema-titulo">{{ tema.titulo }}</h1>
+        {% if tema.autor_id == session.get('user_id') or session.get('es_admin') %}
+        <div class="tema-acciones">
+            <a href="{{ url_for('editar_tema', tema_id=tema.id) }}" class="btn-accion editar">
+                <i class="fas fa-edit"></i> Editar tema
+            </a>
+            <form action="{{ url_for('eliminar_tema', tema_id=tema.id) }}" method="POST" style="display:inline;" class="form-eliminar">
+                <button type="submit" class="btn-accion eliminar">
+                    <i class="fas fa-trash"></i> Eliminar tema
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="page-body">
+
+    <!-- Contenido del tema -->
+    <div class="scard">
+        <div class="scard-header">
+            <i class="fas fa-align-left"></i> Contenido
+            <!-- ✨ BOTÓN RESUMIR CON IA -->
+            <button class="btn-ia-resumir" id="btnResumirIA" onclick="resumirTema({{ tema.id }})">
+                <i class="fas fa-robot ia-icon"></i>
+                <i class="fas fa-spinner ia-spin"></i>
+                Resumir con IA
+            </button>
+        </div>
+        <div class="scard-body">
+            <div class="tema-texto contenido-limitado" id="contenidoTema">{{ tema.contenido }}</div>
+            <button class="btn-leer leer-mas" data-target="contenidoTema"><i class="fas fa-chevron-down"></i> Leer más</button>
+            <button class="btn-leer leer-menos" data-target="contenidoTema" style="display:none;"><i class="fas fa-chevron-up"></i> Leer menos</button>
+            {{ reacciones('tema', tema.id) }}
+            {% if tema.youtube_url %}
+            <div class="video-wrap">
+                <iframe src="https://www.youtube.com/embed/{{ tema.youtube_url|extract_youtube_id }}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Archivos -->
+    <div class="scard">
+        <div class="scard-header">
+            <i class="fas fa-paperclip"></i> Archivos adjuntos
+            <span class="badge-count">{{ tema.archivos|length }}</span>
+        </div>
+        <div class="scard-body">
+            {% if tema.archivos %}
+                {% for archivo in tema.archivos %}
+                {% set ext = archivo.nombre_archivo.rsplit('.', 1)[1].lower() if '.' in archivo.nombre_archivo else '' %}
+                <div class="archivo-item">
+                    <div class="archivo-top">
+                        {% if archivo.es_enlace %}
+                            <div class="file-icon" style="background:#ff000015;color:#ff0000;"><i class="fas fa-link"></i></div>
+                        {% elif ext in ['doc','docx'] %}
+                            <div class="file-icon" style="background:#2b579a15;color:#2b579a;"><i class="fas fa-file-word"></i></div>
+                        {% elif ext in ['xls','xlsx'] %}
+                            <div class="file-icon" style="background:#21734615;color:#217346;"><i class="fas fa-file-excel"></i></div>
+                        {% elif ext in ['ppt','pptx'] %}
+                            <div class="file-icon" style="background:#d2472615;color:#d24726;"><i class="fas fa-file-powerpoint"></i></div>
+                        {% elif ext == 'pdf' %}
+                            <div class="file-icon" style="background:#e6394615;color:#e63946;"><i class="fas fa-file-pdf"></i></div>
+                        {% elif ext in ['zip','rar','7z'] %}
+                            <div class="file-icon" style="background:#6a5acd15;color:#6a5acd;"><i class="fas fa-file-archive"></i></div>
+                        {% elif ext in ['jpg','jpeg','png','gif'] %}
+                            <div class="file-icon" style="background:#4cc9f015;color:#4cc9f0;"><i class="fas fa-file-image"></i></div>
+                        {% else %}
+                            <div class="file-icon" style="background:#6c757d15;color:#6c757d;"><i class="fas fa-file-alt"></i></div>
+                        {% endif %}
+                        <div class="archivo-meta">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+                                <span class="archivo-nombre">{{ archivo.nombre_archivo }}</span>
+                                {% if archivo.autor_id == session.get('user_id') %}
+                                <button type="button" class="btn-lapiz" onclick="toggleDescForm({{ archivo.id }})" title="Editar descripción"><i class="fas fa-pencil-alt"></i></button>
+                                {% endif %}
+                            </div>
+                            <div class="archivo-subido">
+                                Subido por <a class="ver-perfil" data-usuario-id="{{ archivo.autor.id }}" data-nombre="{{ archivo.autor.nombre_usuario }}">{{ archivo.autor.nombre_usuario }}</a>
+                                · {{ archivo.fecha_subida.strftime('%d/%m/%Y') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if archivo.descripcion %}
+                    <div class="archivo-desc contenido-limitado" id="desc{{ archivo.id }}">{{ archivo.descripcion }}</div>
+                    <button class="btn-leer leer-mas" data-target="desc{{ archivo.id }}"><i class="fas fa-chevron-down"></i> Leer más</button>
+                    <button class="btn-leer leer-menos" data-target="desc{{ archivo.id }}" style="display:none;"><i class="fas fa-chevron-up"></i> Leer menos</button>
+                    {% endif %}
+
+                    {% if archivo.autor_id == session.get('user_id') %}
+                    <form action="{{ url_for('editar_descripcion', archivo_id=archivo.id) }}" method="POST" class="editar-desc-form" id="form-desc-{{ archivo.id }}">
+                        <textarea name="nueva_descripcion" placeholder="Edita la descripción...">{{ archivo.descripcion or '' }}</textarea>
+                        <div class="editar-btns">
+                            <button type="submit" class="btn-guardar-desc"><i class="fas fa-save"></i> Guardar</button>
+                            <button type="button" class="btn-cancelar-desc" onclick="toggleDescForm({{ archivo.id }})"><i class="fas fa-times"></i> Cancelar</button>
+                        </div>
+                    </form>
+                    {% endif %}
+
+                    {% if archivo.es_enlace and ('youtube.com' in archivo.ruta or 'youtu.be' in archivo.ruta) %}
+                        <div class="video-wrap">
+                            <iframe src="https://www.youtube.com/embed/{{ archivo.ruta|extract_youtube_id }}"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    {% elif ext in ['doc','docx','xls','xlsx','ppt','pptx'] %}
+                        <div class="office-notice"><i class="fas fa-info-circle"></i> Para visualizar este archivo, por favor descárgalo.</div>
+                    {% elif ext in ['jpg','jpeg','png','gif'] %}
+                        <div class="preview-container"><img src="{{ url_for('ver_archivo', filename=archivo.ruta) }}" alt="{{ archivo.nombre_archivo }}"></div>
+                    {% elif ext == 'pdf' %}
+                        <div class="preview-container"><embed src="{{ url_for('ver_archivo', filename=archivo.ruta) }}" type="application/pdf"></div>
+                    {% elif archivo.es_enlace %}
+                        {% if 'facebook' in archivo.ruta %}
+                            {% set ec_bg = '#1877f2' %} {% set ec_color = '#fff' %} {% set ec_icon = 'fab fa-facebook-f' %} {% set ec_marca = 'Facebook' %}
+                        {% elif 'instagram' in archivo.ruta %}
+                            {% set ec_bg = 'linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)' %} {% set ec_color = '#fff' %} {% set ec_icon = 'fab fa-instagram' %} {% set ec_marca = 'Instagram' %}
+                        {% elif 'twitter' in archivo.ruta or 'x.com' in archivo.ruta %}
+                            {% set ec_bg = '#000' %} {% set ec_color = '#fff' %} {% set ec_icon = 'fab fa-x-twitter' %} {% set ec_marca = 'X / Twitter' %}
+                        {% elif 'youtube' in archivo.ruta or 'youtu.be' in archivo.ruta %}
+                            {% set ec_bg = '#ff0000' %} {% set ec_color = '#fff' %} {% set ec_icon = 'fab fa-youtube' %} {% set ec_marca = 'YouTube' %}
+                        {% elif 'drive.google' in archivo.ruta %}
+                            {% set ec_bg = '#1a73e8' %} {% set ec_color = '#fff' %} {% set ec_icon = 'fab fa-google-drive' %} {% set ec_marca = 'Google Drive' %}
+                        {% elif 'docs.google' in archivo.ruta %}
+                            {% set ec_bg = '#1a73e8' %} {% set ec_color = '#fff' %} {% set ec_icon = 'fab fa-google' %} {% set ec_marca = 'Google Docs' %}
+                        {% elif 'github' in archivo.ruta %}
+                            {% set ec_bg = '#24292f' %} {% set ec_color = '#fff' %} {% set ec_icon = 'fab fa-github' %} {% set ec_marca = 'GitHub' %}
+                        {% elif 'wikipedia' in archivo.ruta %}
+                            {% set ec_bg = '#000' %} {% set ec_color = '#fff' %} {% set ec_icon = 'fab fa-wikipedia-w' %} {% set ec_marca = 'Wikipedia' %}
+                        {% else %}
+                            {% set ec_bg = '#800000' %} {% set ec_color = '#fff' %} {% set ec_icon = 'fas fa-globe' %} {% set ec_marca = 'Enlace externo' %}
+                        {% endif %}
+                        <a href="{{ archivo.ruta }}" target="_blank" rel="noopener noreferrer" class="enlace-card">
+                            <div class="enlace-card-icon" style="background:{{ ec_bg }};color:{{ ec_color }};"><i class="{{ ec_icon }}"></i></div>
+                            <div class="enlace-card-info">
+                                <div class="enlace-card-marca" style="color:{{ ec_bg if 'linear' not in ec_bg else '#e6683c' }};">{{ ec_marca }}</div>
+                                <div class="enlace-card-url" style="color:#1a1a1a;">{{ archivo.ruta }}</div>
+                                <div class="enlace-card-sub"><i class="fas fa-external-link-alt"></i> Abrir en nueva pestaña</div>
+                            </div>
+                        </a>
+                    {% endif %}
+
+                    <div class="archivo-actions">
+                        {% if archivo.es_enlace %}
+                            <a href="{{ archivo.ruta }}" target="_blank" class="arch-btn"><i class="fas fa-external-link-alt"></i> Abrir</a>
+                        {% else %}
+                            <a href="{{ url_for('descargar_archivo', archivo_id=archivo.id) }}" class="arch-btn"><i class="fas fa-download"></i> Descargar</a>
+                            {% if ext in ['jpg','jpeg','png','gif','pdf'] %}
+                            <a href="{{ url_for('ver_archivo', filename=archivo.ruta) }}" target="_blank" class="arch-btn"><i class="fas fa-external-link-alt"></i> Nueva pestaña</a>
+                            {% endif %}
+                        {% endif %}
+                        <a href="#" class="arch-btn" onclick="abrirGmail('{{ archivo.autor.correo }}','{{ archivo.nombre_archivo }}','{{ archivo.autor.nombre_usuario }}');return false;">
+                            <i class="fas fa-envelope"></i> Contactar autor
+                        </a>
+                        {% if archivo.autor_id == session.get('user_id') %}
+                        <form action="{{ url_for('eliminar_archivo', archivo_id=archivo.id) }}" method="POST" style="display:inline;" class="form-eliminar">
+                            <button type="submit" class="arch-btn danger"><i class="fas fa-trash"></i> Eliminar</button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    {{ reacciones('archivo', archivo.id) }}
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-folder-open"></i>
+                <p>No hay archivos adjuntos en este tema</p>
+                <a href="{{ url_for('subir_archivo', tema_id=tema.id) }}" class="nav-btn subir" style="display:inline-flex;margin-top:12px;">
+                    <i class="fas fa-upload"></i> Subir primer archivo
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Comentarios -->
+    <div class="scard">
+        <div class="scard-header">
+            <i class="fas fa-comments"></i> Comentarios
+            <span class="badge-count">{{ tema.comentarios|length }}</span>
+        </div>
+        <div class="scard-body">
+            {% if tema.comentarios %}
+                {% for comentario in tema.comentarios %}
+                <div class="comentario-item">
+                    <img src="{{ url_for('static', filename='perfiles/' + comentario.autor.imagen_perfil) }}"
+                         alt="{{ comentario.autor.nombre_usuario }}" class="com-avatar ver-perfil"
+                         data-usuario-id="{{ comentario.autor.id }}" data-nombre="{{ comentario.autor.nombre_usuario }}">
+                    <div class="com-body">
+                        <div class="com-header">
+                            <span class="com-autor ver-perfil" data-usuario-id="{{ comentario.autor.id }}" data-nombre="{{ comentario.autor.nombre_usuario }}">
+                                {{ comentario.autor.nombre_usuario }}
+                            </span>
+                            <span class="com-fecha">{{ comentario.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                        <div class="com-texto">{{ comentario.contenido }}</div>
+                        {{ reacciones('comentario', comentario.id) }}
+                        {% if comentario.youtube_url %}
+                        <div class="video-wrap" style="margin-top:12px;">
+                            <iframe src="https://www.youtube.com/embed/{{ comentario.youtube_url|extract_youtube_id }}"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        {% endif %}
+                        {% if comentario.autor_id == session.get('user_id') %}
+                        <form action="{{ url_for('eliminar_comentario', id=comentario.id) }}" method="POST" class="form-eliminar">
+                            <button type="submit" class="btn-del-com"><i class="fas fa-trash"></i> Eliminar</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-comment-slash"></i>
+                <p>No hay comentarios aún</p>
+                <p style="font-size:0.85rem;">Sé el primero en comentar</p>
+            </div>
+            {% endif %}
+
+            <form class="form-comentar" method="POST" action="{{ url_for('ver_tema', tema_id=tema.id) }}" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--borde);">
+                <label><i class="fas fa-pen"></i> &nbsp;Añadir comentario</label>
+                <textarea name="contenido" placeholder="Escribe tu comentario aquí..." required></textarea>
+                <button type="submit" class="btn-comentar"><i class="fas fa-paper-plane"></i> Publicar comentario</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<div class="page-footer">UPTI &copy; 2025 — Plataforma Académica</div>
+
+<!-- Modal perfil -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div id="modalContent">
+            <div class="modal-loading"><i class="fas fa-spinner"></i><p>Cargando perfil...</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- ✨ MODAL RESUMEN IA -->
+<div class="modal-ia-overlay" id="modalIAOverlay">
+    <div class="modal-ia-box">
+        <div class="modal-ia-head">
+            <div class="modal-ia-head-icon"><i class="fas fa-robot"></i></div>
+            <div class="modal-ia-head-info">
+                <div class="modal-ia-head-title">Resumen con IA</div>
+                <div class="modal-ia-head-sub">{{ tema.titulo }}</div>
+            </div>
+            <button class="modal-ia-close" onclick="cerrarModalIA()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-ia-body" id="modalIABody">
+            <div class="ia-loading">
+                <div class="ia-dots"><span></span><span></span><span></span></div>
+                <p>Analizando el tema con IA...</p>
+            </div>
+        </div>
+        <div class="modal-ia-foot" id="modalIAFoot" style="display:none;">
+            <button class="btn-ia-copiar" id="btnCopiar" onclick="copiarResumen()">
+                <i class="fas fa-copy"></i> Copiar
+            </button>
+            <button class="btn-ia-cerrar" onclick="cerrarModalIA()">
+                <i class="fas fa-times"></i> Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleDescForm(id) {
+        const form = document.getElementById('form-desc-' + id);
+        form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
+    }
+
+    function abrirGmail(email, archivo, autor) {
+        const subject = `Consulta sobre ${archivo}`;
+        const body = `Hola ${autor},\n\nMe gustaría preguntarte sobre tu archivo "${archivo}".\n\nSaludos.`;
+        window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+    }
+
+    // ── Modal perfil ──
+    const overlay = document.getElementById('modalOverlay');
+    const modalContent = document.getElementById('modalContent');
+
+    function abrirModal(usuarioId) {
+        modalContent.innerHTML = '<div class="modal-loading"><i class="fas fa-spinner"></i><p>Cargando perfil...</p></div>';
+        overlay.classList.add('active');
+        fetch(`/perfil_modal/${usuarioId}`)
+            .then(r => r.json())
+            .then(u => {
+                modalContent.innerHTML = `
+                    <div class="modal-hero">
+                        <button class="modal-close" onclick="cerrarModal()"><i class="fas fa-times"></i></button>
+                        <img src="/static/perfiles/${u.imagen_perfil}" alt="${u.nombre_usuario}" class="modal-avatar">
+                        <div class="modal-nombre">${u.nombre_usuario}</div>
+                        <div class="modal-correo">${u.correo}</div>
+                    </div>
+                    <div class="modal-info">
+                        <div class="modal-item">
+                            <div class="modal-item-icon"><i class="fas fa-calendar-alt"></i></div>
+                            <div><div class="modal-item-label">Cuatrimestre</div>
+                            <div class="modal-item-value ${!u.cuatrimestre ? 'vacio' : ''}">${u.cuatrimestre || 'No asignado'}</div></div>
+                        </div>
+                        <div class="modal-item">
+                            <div class="modal-item-icon"><i class="fas fa-users"></i></div>
+                            <div><div class="modal-item-label">Grupo</div>
+                            <div class="modal-item-value ${!u.grupo ? 'vacio' : ''}">${u.grupo || 'No asignado'}</div></div>
+                        </div>
+                        ${u.descripcion ? `<div class="modal-item">
+                            <div class="modal-item-icon"><i class="fas fa-info-circle"></i></div>
+                            <div><div class="modal-item-label">Descripción</div>
+                            <div class="modal-item-value">${u.descripcion}</div></div>
+                        </div>` : ''}
+                    </div>`;
+            })
+            .catch(() => { modalContent.innerHTML = '<div class="modal-loading"><p style="color:#dc3545;">No se pudo cargar el perfil.</p></div>'; });
+    }
+
+    function cerrarModal() { overlay.classList.remove('active'); }
+    overlay.addEventListener('click', e => { if (e.target === overlay) cerrarModal(); });
+
+    // ── Modal IA ──
+    let _resumenTexto = '';
+
+    function resumirTema(temaId) {
+        const btn = document.getElementById('btnResumirIA');
+        btn.classList.add('cargando');
+        btn.disabled = true;
+
+        document.getElementById('modalIABody').innerHTML = `
+            <div class="ia-loading">
+                <div class="ia-dots"><span></span><span></span><span></span></div>
+                <p>Analizando el tema con IA...</p>
+            </div>`;
+        document.getElementById('modalIAFoot').style.display = 'none';
+        document.getElementById('modalIAOverlay').classList.add('active');
+
+        fetch(`/ia/resumir_tema/${temaId}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                btn.classList.remove('cargando');
+                btn.disabled = false;
+                if (data.resumen) {
+                    _resumenTexto = data.resumen;
+                    document.getElementById('modalIABody').innerHTML =
+                        `<div class="ia-badge"><i class="fas fa-robot"></i> Generado por Groq IA</div>
+                         <div class="resumen-md">${mdToHtml(data.resumen)}</div>`;
+                    document.getElementById('modalIAFoot').style.display = 'flex';
+                } else {
+                    document.getElementById('modalIABody').innerHTML =
+                        `<div style="text-align:center;padding:30px;color:#c0392b;">
+                            <i class="fas fa-exclamation-circle" style="font-size:2rem;display:block;margin-bottom:12px;"></i>
+                            <p>No se pudo generar el resumen. Intenta de nuevo.</p>
+                         </div>`;
+                    document.getElementById('modalIAFoot').style.display = 'flex';
+                }
+            })
+            .catch(() => {
+                btn.classList.remove('cargando');
+                btn.disabled = false;
+                document.getElementById('modalIABody').innerHTML =
+                    `<div style="text-align:center;padding:30px;color:#c0392b;">
+                        <i class="fas fa-wifi" style="font-size:2rem;display:block;margin-bottom:12px;"></i>
+                        <p>Error de conexión. Verifica tu red e intenta de nuevo.</p>
+                     </div>`;
+                document.getElementById('modalIAFoot').style.display = 'flex';
+            });
+    }
+
+    function cerrarModalIA() { document.getElementById('modalIAOverlay').classList.remove('active'); }
+    document.getElementById('modalIAOverlay').addEventListener('click', function(e) { if (e.target === this) cerrarModalIA(); });
+
+    function copiarResumen() {
+        navigator.clipboard.writeText(_resumenTexto).then(() => {
+            const btn = document.getElementById('btnCopiar');
+            btn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copiar'; }, 2000);
+        });
+    }
+
+    function mdToHtml(t) {
+        return t
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>')
+            .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+            .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+            .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+            .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
+            .replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/^(?!<[hul])/gm, '')
+            .replace(/\n/g, '<br>');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.ver-perfil').forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                abrirModal(this.dataset.usuarioId);
+            });
+        });
+
+        document.querySelectorAll('.leer-mas, .leer-menos').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.target;
+                const el = document.getElementById(id);
+                const esMas = this.classList.contains('leer-mas');
+                el.classList.toggle('contenido-limitado', !esMas);
+                el.classList.toggle('contenido-completo', esMas);
+                document.querySelector(`.leer-mas[data-target="${id}"]`).style.display = esMas ? 'none' : 'inline-flex';
+                document.querySelector(`.leer-menos[data-target="${id}"]`).style.display = esMas ? 'inline-flex' : 'none';
+            });
+        });
+
+        document.querySelectorAll('.contenido-limitado').forEach(el => {
+            if (el.scrollHeight <= 200) {
+                const id = el.id;
+                const btn = document.querySelector(`.leer-mas[data-target="${id}"]`);
+                if (btn) btn.style.display = 'none';
+                el.classList.remove('contenido-limitado');
+                el.classList.add('contenido-completo');
+            }
+        });
+
+        document.querySelectorAll('.form-eliminar').forEach(form => {
+            form.addEventListener('submit', e => {
+                if (!confirm('¿Estás seguro de eliminar este elemento? Esta acción no se puede deshacer.')) e.preventDefault();
+            });
+        });
+    });
+</script>
+
+<script>
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.reac-trigger-wrap')) {
+        document.querySelectorAll('.reac-popup.visible').forEach(p => p.classList.remove('visible'));
+    }
+});
+const _cierreTimers = {};
+function mostrarPopup(tipo, objId) {
+    cancelarCierre(tipo, objId);
+    document.querySelectorAll('.reac-popup.visible').forEach(p => p.classList.remove('visible'));
+    document.getElementById(`popup-${tipo}-${objId}`).classList.add('visible');
+}
+function iniciarCierrePopup(tipo, objId) {
+    _cierreTimers[`${tipo}-${objId}`] = setTimeout(() => {
+        const p = document.getElementById(`popup-${tipo}-${objId}`);
+        if (p) p.classList.remove('visible');
+    }, 400);
+}
+function cancelarCierre(tipo, objId) { clearTimeout(_cierreTimers[`${tipo}-${objId}`]); }
+function togglePopup(tipo, objId) { document.getElementById(`popup-${tipo}-${objId}`).classList.toggle('visible'); }
+function reaccionar(tipo, objId, emoji, label, btn) {
+    const fd = new FormData();
+    fd.append('tipo_objeto', tipo); fd.append('objeto_id', objId); fd.append('emoji', emoji);
+    fetch('/reaccionar', { method: 'POST', body: fd }).then(r => r.json()).then(data => {
+        const popup = document.getElementById(`popup-${tipo}-${objId}`);
+        const wrap = document.getElementById(`reac-${tipo}-${objId}`);
+        const conteos = document.getElementById(`conteos-${tipo}-${objId}`);
+        const mainBtn = wrap.querySelector('.btn-reac-main');
+        popup.classList.remove('visible');
+        popup.querySelectorAll('.reac-popup-btn').forEach(b => b.classList.remove('activo'));
+        if (data.activo) {
+            btn.classList.add('activo'); mainBtn.classList.add('activo'); mainBtn.textContent = `${emoji} ${label}`;
+            conteos.querySelectorAll('.reac-chip').forEach(c => c.classList.remove('mia'));
+            let chip = conteos.querySelector(`[data-emoji="${emoji}"]`);
+            if (chip) { chip.querySelector('.chip-count').textContent = data.count; chip.classList.add('mia'); }
+            else { chip = document.createElement('span'); chip.className = 'reac-chip mia'; chip.dataset.emoji = emoji; chip.innerHTML = `${emoji} <span class="chip-count">${data.count}</span>`; conteos.appendChild(chip); }
+        } else {
+            mainBtn.classList.remove('activo'); mainBtn.textContent = '👍 Me gusta';
+            const chip = conteos.querySelector(`[data-emoji="${emoji}"]`);
+            if (chip) { if (data.count === 0) chip.remove(); else chip.querySelector('.chip-count').textContent = data.count; }
+        }
+        btn.style.transform = 'scale(1.6) translateY(-6px)';
+        setTimeout(() => btn.style.transform = '', 300);
+    });
+}
+</script>
+
+{% include 'chat_ia.html' %}
+
+{% include 'quiz_ia.html' %}
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Editar Perfil | UPTI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo: #800000; --rojo2: #a00000; --rojo-dark: #5a0000;
+            --rojo-glow: rgba(128,0,0,0.10); --bg: #faf7f5; --borde: #eeddd8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'DM Sans', sans-serif; min-height: 100vh;
+            background: var(--bg);
+            background-image:
+                radial-gradient(ellipse at 10% 10%, rgba(128,0,0,0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 90%, rgba(128,0,0,0.04) 0%, transparent 50%);
+            display: flex; align-items: center; justify-content: center; padding: 40px 20px;
+        }
+
+        .card {
+            background: #fff; border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(128,0,0,0.12);
+            width: 100%; max-width: 540px; overflow: hidden;
+            animation: aparecer 0.4s ease;
+        }
+        @keyframes aparecer { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Hero */
+        .card-hero {
+            background: linear-gradient(135deg, var(--rojo-dark), var(--rojo) 60%, #c0392b);
+            padding: 36px 32px 60px; text-align: center; position: relative; overflow: hidden;
+        }
+        .card-hero::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 1px, transparent 0, transparent 50%); background-size: 20px 20px; }
+        .card-hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 44px; background: #fff; clip-path: ellipse(55% 100% at 50% 100%); }
+
+        .avatar-wrap { position: relative; display: inline-block; margin-bottom: 14px; }
+        .avatar-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(255,255,255,0.8); box-shadow: 0 6px 20px rgba(0,0,0,0.2); display: block; transition: transform 0.3s; }
+        .avatar-img:hover { transform: scale(1.05); }
+        .avatar-btn { position: absolute; bottom: 2px; right: 2px; width: 32px; height: 32px; border-radius: 50%; background: #fff; border: none; color: var(--rojo); font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s; }
+        .avatar-btn:hover { transform: scale(1.1); background: var(--rojo); color: #fff; }
+        .avatar-input { display: none; }
+        .card-hero h1 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.2); margin-bottom: 4px; position: relative; }
+        .card-hero p { color: rgba(255,255,255,0.7); font-size: 0.82rem; position: relative; }
+
+        /* Body */
+        .card-body { padding: 28px 36px 36px; }
+
+        /* Flash */
+        .flash { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; font-size: 0.84rem; margin-bottom: 20px; }
+        .flash.success { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+        .flash.danger  { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
+
+        /* Sección */
+        .seccion-titulo {
+            font-size: 0.72rem; font-weight: 800; color: var(--rojo);
+            text-transform: uppercase; letter-spacing: 1.5px;
+            margin: 24px 0 14px; display: flex; align-items: center; gap: 8px;
+        }
+        .seccion-titulo::after { content: ''; flex: 1; height: 1px; background: var(--borde); }
+
+        /* Campos */
+        .campo { margin-bottom: 16px; }
+        .campo label { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 700; color: var(--rojo); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .input-row { display: flex; align-items: center; background: #f8f8f8; border: 1.5px solid #e0e0e0; border-radius: 50px; height: 50px; padding: 0 18px; gap: 10px; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+        .input-row:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+        .input-row .fi { color: var(--rojo); font-size: 14px; flex-shrink: 0; width: 16px; text-align: center; }
+        .input-row input, .input-row select { flex: 1; border: none; background: transparent; outline: none; font-size: 0.9rem; color: #333; min-width: 0; font-family: 'DM Sans', sans-serif; height: 100%; }
+        .input-row select { cursor: pointer; }
+        .input-row input::placeholder { color: #bbb; }
+
+        /* Selector de grupo con botones */
+        .grupo-selector { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+        .grupo-btn {
+            height: 44px; border-radius: 12px; border: 1.5px solid #e0e0e0;
+            background: #f8f8f8; font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem; font-weight: 700; cursor: pointer;
+            color: #888; transition: all 0.15s; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .grupo-btn:hover { border-color: var(--rojo); color: var(--rojo); background: var(--rojo-glow); }
+        .grupo-btn.seleccionado { background: var(--rojo); color: #fff; border-color: var(--rojo); box-shadow: 0 3px 10px rgba(128,0,0,0.25); }
+        .grupo-btn.sin-grupo { grid-column: span 6; font-size: 0.82rem; color: #aaa; }
+        .grupo-btn.sin-grupo.seleccionado { background: #f0f0f0; color: #666; border-color: #ccc; box-shadow: none; }
+
+        /* Textarea */
+        .textarea-wrap { background: #f8f8f8; border: 1.5px solid #e0e0e0; border-radius: 16px; padding: 14px 18px; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+        .textarea-wrap:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+        .textarea-wrap textarea { width: 100%; border: none; background: transparent; outline: none; resize: vertical; min-height: 90px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: #333; line-height: 1.6; }
+        .textarea-wrap textarea::placeholder { color: #bbb; }
+        .char-count { font-size: 0.72rem; color: #bbb; text-align: right; margin-top: 4px; }
+
+        /* Botones */
+        .btn-guardar { width: 100%; height: 50px; border-radius: 14px; background: linear-gradient(135deg, var(--rojo), #c0392b); color: #fff; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 6px 18px rgba(128,0,0,0.25); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; }
+        .btn-guardar:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(128,0,0,0.3); }
+        .btn-cancelar { width: 100%; height: 50px; border-radius: 14px; background: #f0f0f0; color: #555; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 700; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s, color 0.2s; }
+        .btn-cancelar:hover { background: #ddd; color: #333; }
+
+        @media (max-width: 480px) {
+            .card-body { padding: 22px 20px 28px; }
+            .card-hero { padding: 28px 20px 48px; }
+            .grupo-selector { grid-template-columns: repeat(6, 1fr); }
+            .grupo-btn.sin-grupo { grid-column: span 6; }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-hero">
+        <div class="avatar-wrap">
+            <img src="{{ url_for('static', filename='perfiles/' + usuario.imagen_perfil) }}"
+                 alt="Foto de perfil" class="avatar-img" id="imgPreview">
+            <button type="button" class="avatar-btn" onclick="document.getElementById('avatarInput').click()" title="Cambiar foto">
+                <i class="fas fa-camera"></i>
+            </button>
+        </div>
+        <h1>Editar Perfil</h1>
+        <p>Actualiza tu información personal</p>
+    </div>
+
+    <div class="card-body">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">
+                    <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" id="avatarInput" name="imagen_perfil" accept="image/*" class="avatar-input" onchange="previewImage(event)">
+
+            <div class="seccion-titulo"><i class="fas fa-user"></i> Información personal</div>
+
+            <div class="campo">
+                <label><i class="fas fa-user fi"></i> Nombre de usuario</label>
+                <div class="input-row">
+                    <i class="fas fa-at fi"></i>
+                    <input type="text" name="nombre_usuario" value="{{ usuario.nombre_usuario }}" required placeholder="Tu nombre de usuario">
+                </div>
+            </div>
+
+            <div class="campo">
+                <label><i class="fas fa-info-circle fi"></i> Descripción</label>
+                <div class="textarea-wrap">
+                    <textarea name="descripcion" placeholder="Cuéntanos sobre ti..." maxlength="200" id="descTextarea">{{ usuario.descripcion or '' }}</textarea>
+                </div>
+                <div class="char-count"><span id="charCount">{{ (usuario.descripcion or '')|length }}</span>/200</div>
+            </div>
+
+            <div class="seccion-titulo"><i class="fas fa-graduation-cap"></i> Datos académicos</div>
+
+            <div class="campo">
+                <label><i class="fas fa-calendar-alt fi"></i> Cuatrimestre</label>
+                <div class="input-row">
+                    <i class="fas fa-calendar-alt fi"></i>
+                    <select name="cuatrimestre_id">
+                        <option value="" {% if not usuario.cuatrimestre_id %}selected{% endif %}>-- Selecciona tu cuatrimestre --</option>
+                        {% for cuatri in cuatrimestres %}
+                            <option value="{{ cuatri.id }}" {% if usuario.cuatrimestre_id == cuatri.id %}selected{% endif %}>{{ cuatri.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label><i class="fas fa-users fi"></i> Grupo</label>
+                <input type="hidden" name="grupo" id="grupoInput" value="{{ usuario.grupo or '' }}">
+                <div class="grupo-selector">
+                    {% set grupos = ['A', 'B', 'C', 'D', 'E', 'F'] %}
+                    {% for g in grupos %}
+                    <button type="button" class="grupo-btn {% if usuario.grupo == g %}seleccionado{% endif %}"
+                            onclick="seleccionarGrupo('{{ g }}')">{{ g }}</button>
+                    {% endfor %}
+                    <button type="button" class="grupo-btn sin-grupo {% if not usuario.grupo %}seleccionado{% endif %}"
+                            onclick="seleccionarGrupo('')">
+                        <i class="fas fa-times" style="margin-right:6px;font-size:10px;"></i> Sin grupo asignado
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top: 28px;">
+                <button type="submit" class="btn-guardar">
+                    <i class="fas fa-save"></i> Guardar cambios
+                </button>
+                <a href="{{ url_for('ver_perfil', usuario_id=usuario.id) }}" class="btn-cancelar">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = () => document.getElementById('imgPreview').src = reader.result;
+        if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function seleccionarGrupo(g) {
+        document.getElementById('grupoInput').value = g;
+        document.querySelectorAll('.grupo-btn').forEach(b => b.classList.remove('seleccionado'));
+        // Encontrar el botón correcto
+        document.querySelectorAll('.grupo-btn').forEach(b => {
+            const esSinGrupo = b.classList.contains('sin-grupo');
+            if ((g === '' && esSinGrupo) || (g !== '' && b.textContent.trim() === g)) {
+                b.classList.add('seleccionado');
+            }
+        });
+    }
+
+    // Contador de caracteres
+    const desc = document.getElementById('descTextarea');
+    const count = document.getElementById('charCount');
+    desc.addEventListener('input', () => count.textContent = desc.value.length);
+</script>
+{% include 'chat_ia.html' %}
+</body>
+</html>

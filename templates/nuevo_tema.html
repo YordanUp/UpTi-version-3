@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nuevo Tema | UPTI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo: #800000; --rojo2: #a00000; --rojo-dark: #5a0000;
+            --rojo-glow: rgba(128,0,0,0.12); --bg: #faf7f5; --card: #ffffff;
+            --texto: #1a1a1a; --texto2: #666; --borde: #eeddd8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--texto); min-height: 100vh; background-image: radial-gradient(ellipse at 10% 10%, rgba(128,0,0,0.05) 0%, transparent 50%), radial-gradient(ellipse at 90% 90%, rgba(128,0,0,0.04) 0%, transparent 50%); }
+        .navbar { background: #fff; border-bottom: 1px solid var(--borde); padding: 0 40px; height: 72px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(128,0,0,0.06); }
+        .navbar-left { display: flex; align-items: center; gap: 20px; }
+        .navbar-logo { height: 46px; transition: transform 0.3s; }
+        .navbar-logo:hover { transform: scale(1.05); }
+        .btn-volver { display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 16px; border-radius: 50px; font-size: 0.84rem; font-weight: 600; text-decoration: none; background: var(--rojo-glow); color: var(--rojo); border: 1.5px solid var(--borde); transition: all 0.2s; }
+        .btn-volver:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+        .navbar-right { display: flex; align-items: center; gap: 12px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2.5px solid var(--rojo); box-shadow: 0 0 0 3px var(--rojo-glow); transition: transform 0.3s; }
+        .user-avatar:hover { transform: scale(1.08); }
+        .user-name { font-size: 0.88rem; font-weight: 600; color: var(--texto); }
+        .navbar-search { display: flex; align-items: center; background: #f8f8f8; border: 1.5px solid #e0e0e0; border-radius: 50px; height: 38px; padding: 0 16px; gap: 8px; transition: all 0.2s; width: 260px; }
+        .navbar-search:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); width: 300px; }
+        .navbar-search i.si { color: var(--rojo); font-size: 13px; flex-shrink: 0; }
+        .navbar-search input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.86rem; color: #333; font-family: 'DM Sans', sans-serif; }
+        .navbar-search input::placeholder { color: #bbb; }
+        .navbar-search button { border: none; background: none; cursor: pointer; color: var(--rojo); font-size: 13px; padding: 0; display: flex; align-items: center; }
+        .page { max-width: 720px; margin: 0 auto; padding: 48px 30px 60px; }
+        .page-header { margin-bottom: 32px; }
+        .page-header .badge-label { display: inline-flex; align-items: center; gap: 7px; background: var(--rojo-glow); color: var(--rojo); border: 1px solid var(--borde); border-radius: 50px; padding: 5px 14px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--rojo); margin-bottom: 6px; }
+        .page-header p { color: var(--texto2); font-size: 0.9rem; }
+        .form-card { background: var(--card); border-radius: 20px; border: 1px solid var(--borde); box-shadow: 0 8px 30px rgba(128,0,0,0.07); overflow: hidden; animation: cardIn 0.4s ease both; }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .form-card-header { background: linear-gradient(135deg, var(--rojo-dark), var(--rojo)); padding: 24px 32px; display: flex; align-items: center; gap: 16px; }
+        .form-card-header .hdr-icon { width: 46px; height: 46px; background: rgba(255,255,255,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+        .form-card-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: #fff; }
+        .form-card-header p { color: rgba(255,255,255,0.7); font-size: 0.82rem; }
+        .form-body { padding: 32px; }
+        .campo { margin-bottom: 22px; }
+        .campo label { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; color: var(--rojo); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .campo input[type="text"], .campo textarea { width: 100%; background: #f8f8f8; border: 1.5px solid #e8e8e8; border-radius: 14px; padding: 14px 18px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; color: var(--texto); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; resize: vertical; }
+        .campo input[type="text"]:focus, .campo textarea:focus { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+        .campo input::placeholder, .campo textarea::placeholder { color: #bbb; }
+        .campo textarea { min-height: 140px; }
+
+        /* ── ETIQUETAS ── */
+        .etiquetas-grid {
+            display: flex; flex-wrap: wrap; gap: 8px;
+        }
+        .etiqueta-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            height: 34px; padding: 0 14px; border-radius: 50px;
+            border: 1.5px solid #e0e0e0; background: #f8f8f8;
+            font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; color: #777; transition: all 0.18s;
+        }
+        .etiqueta-btn:hover { border-color: var(--rojo); color: var(--rojo); background: var(--rojo-glow); }
+        .etiqueta-btn.activa { background: var(--rojo-glow); color: var(--rojo); border-color: var(--rojo); }
+        .etiqueta-btn.activa i { opacity: 1; }
+        .etiqueta-btn i { font-size: 10px; opacity: 0.5; transition: opacity 0.2s; }
+        .etiquetas-hint { font-size: 0.74rem; color: #bbb; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+
+        .archivos-section { background: #fdf9f8; border: 1.5px dashed var(--borde); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+        .archivos-title { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 700; color: var(--rojo); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 18px; }
+        .tipo-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; height: 42px; border-radius: 12px; border: 1.5px solid #e0e0e0; background: #fff; color: #888; font-family: 'DM Sans', sans-serif; font-size: 0.84rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: all 0.2s; }
+        .tab-btn.activo { background: var(--rojo-glow); color: var(--rojo); border-color: var(--rojo); }
+        .tab-btn:hover:not(.activo) { background: #f0f0f0; color: #555; }
+        .panel-archivo, .panel-enlace { display: none; }
+        .panel-archivo.visible, .panel-enlace.visible { display: block; }
+        .upload-row { display: flex; align-items: center; background: #fff; border: 1.5px solid #e0e0e0; border-radius: 50px; height: 48px; overflow: hidden; position: relative; cursor: pointer; transition: border-color 0.2s; margin-bottom: 14px; }
+        .upload-row:hover { border-color: var(--rojo); }
+        .upload-btn-inner { background: var(--rojo); color: #fff; height: 100%; padding: 0 18px; display: flex; align-items: center; gap: 7px; font-size: 0.82rem; font-weight: 600; white-space: nowrap; flex-shrink: 0; border-radius: 50px 0 0 50px; transition: background 0.2s; }
+        .upload-row:hover .upload-btn-inner { background: var(--rojo2); }
+        .upload-nombre { flex: 1; padding: 0 14px; font-size: 0.82rem; color: #aaa; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .upload-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .enlace-tipos { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .enlace-tipo-btn { height: 36px; padding: 0 14px; border-radius: 50px; border: 1.5px solid #e0e0e0; background: #fff; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; color: #777; }
+        .enlace-tipo-btn.activo { border-color: var(--rojo); background: var(--rojo-glow); color: var(--rojo); }
+        .enlace-tipo-btn:hover:not(.activo) { background: #f0f0f0; }
+        .preview-enlace { margin-top: 14px; display: none; }
+        .preview-enlace.visible { display: block; }
+        .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+        .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .preview-link-card { display: flex; align-items: center; gap: 12px; background: #fff; border: 1.5px solid var(--borde); border-radius: 14px; padding: 14px 18px; }
+        .preview-link-card .link-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--rojo-glow); color: var(--rojo); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .preview-link-card .link-url { font-size: 0.84rem; color: var(--rojo); font-weight: 600; word-break: break-all; }
+        .preview-link-card .link-sub { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
+        .btns { display: flex; flex-direction: column; gap: 10px; }
+        .btn-publicar { width: 100%; height: 52px; border-radius: 14px; background: linear-gradient(135deg, var(--rojo), #c0392b); color: #fff; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 1px; cursor: pointer; box-shadow: 0 6px 18px rgba(128,0,0,0.3); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-publicar:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(128,0,0,0.35); }
+        .btn-cancelar { width: 100%; height: 48px; border-radius: 14px; background: #f5f5f5; color: #666; border: 1.5px solid #e5e5e5; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-cancelar:hover { background: #555; color: #fff; border-color: #555; }
+        .footer { text-align: center; padding: 24px; font-size: 0.78rem; color: #bbb; border-top: 1px solid var(--borde); margin-top: 20px; }
+        @media (max-width: 600px) { .navbar { padding: 0 16px; } .user-name { display: none; } .page { padding: 28px 16px 40px; } .form-body { padding: 22px 20px; } .form-card-header { padding: 20px; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="{{ url_for('inicio') }}">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="UPTI" class="navbar-logo">
+        </a>
+        <form action="{{ url_for('buscar') }}" method="GET" class="navbar-search">
+            <i class="fas fa-search si"></i>
+            <input type="text" name="q" placeholder="Buscar temas, archivos..." autocomplete="off">
+            <button type="submit"><i class="fas fa-arrow-right"></i></button>
+        </form>
+        <a href="{{ url_for('ver_materia', materia_id=materia_id) }}" class="btn-volver">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+    <div class="navbar-right">
+        <div class="user-info">
+            <img src="{{ url_for('static', filename='perfiles/' + usuario.imagen_perfil) }}" alt="Perfil" class="user-avatar">
+            <span class="user-name">{{ usuario.nombre_usuario }}</span>
+        </div>
+    </div>
+</nav>
+
+<div class="page">
+    <div class="page-header">
+        <div class="badge-label"><i class="fas fa-plus-circle"></i> Crear contenido</div>
+        <h1>Nuevo Tema</h1>
+        <p>Comparte conocimiento con tus compañeros de clase</p>
+    </div>
+
+    <div class="form-card">
+        <div class="form-card-header">
+            <div class="hdr-icon"><i class="fas fa-pen-nib"></i></div>
+            <div>
+                <h2>Redactar Tema</h2>
+                <p>Completa la información del nuevo tema</p>
+            </div>
+        </div>
+
+        <div class="form-body">
+            <form method="POST" enctype="multipart/form-data">
+
+                <div class="campo">
+                    <label><i class="fas fa-heading"></i> Título del tema</label>
+                    <input type="text" name="titulo" placeholder="Escribe un título descriptivo y claro" required>
+                </div>
+
+                <div class="campo">
+                    <label><i class="fas fa-align-left"></i> Contenido</label>
+                    <textarea name="contenido" placeholder="Desarrolla aquí tu tema con toda la información relevante..." required></textarea>
+                </div>
+
+                <!-- ✨ ETIQUETAS -->
+                <div class="campo">
+                    <label><i class="fas fa-tags"></i> Etiquetas</label>
+                    <div class="etiquetas-grid" id="etiquetasGrid">
+                        <button type="button" class="etiqueta-btn" data-etiqueta="examen" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 📝 Examen
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="tarea" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 📋 Tarea
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="concepto" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 💡 Concepto
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="resumen" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 📄 Resumen
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="ejercicio" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 🔢 Ejercicio
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="proyecto" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 🚀 Proyecto
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="apunte" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> ✏️ Apunte
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="duda" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> ❓ Duda
+                        </button>
+                    </div>
+                    <input type="hidden" name="etiquetas" id="etiquetasInput">
+                    <div class="etiquetas-hint"><i class="fas fa-info-circle"></i> Selecciona una o más etiquetas para organizar el tema</div>
+                </div>
+
+                <!-- Archivos adjuntos -->
+                <div class="archivos-section">
+                    <div class="archivos-title"><i class="fas fa-paperclip"></i> Adjunto (opcional)</div>
+                    <div class="tipo-tabs">
+                        <button type="button" class="tab-btn activo" onclick="cambiarTab('archivo')">
+                            <i class="fas fa-file-upload"></i> Archivo
+                        </button>
+                        <button type="button" class="tab-btn" onclick="cambiarTab('enlace')">
+                            <i class="fas fa-link"></i> Enlace / YouTube
+                        </button>
+                    </div>
+                    <div class="panel-archivo visible" id="panel-archivo">
+                        <div class="campo" style="margin-bottom:14px;">
+                            <label><i class="fas fa-file-upload"></i> Seleccionar archivo</label>
+                            <div class="upload-row">
+                                <div class="upload-btn-inner"><i class="fas fa-upload"></i> Elegir archivo</div>
+                                <span class="upload-nombre" id="upload-nombre">Ningún archivo seleccionado</span>
+                                <input type="file" name="archivo" class="upload-input" id="fileInput">
+                            </div>
+                        </div>
+                        <div class="campo" style="margin-bottom:0;">
+                            <label><i class="fas fa-comment-alt"></i> Descripción del archivo</label>
+                            <input type="text" name="descripcion_archivo" placeholder="Breve descripción del archivo adjunto">
+                        </div>
+                    </div>
+                    <div class="panel-enlace" id="panel-enlace">
+                        <div class="enlace-tipos">
+                            <button type="button" class="enlace-tipo-btn activo" onclick="cambiarTipoEnlace('youtube')">
+                                <i class="fab fa-youtube yt"></i> YouTube
+                            </button>
+                            <button type="button" class="enlace-tipo-btn" onclick="cambiarTipoEnlace('web')">
+                                <i class="fas fa-globe web"></i> Sitio web
+                            </button>
+                            <button type="button" class="enlace-tipo-btn" onclick="cambiarTipoEnlace('otro')">
+                                <i class="fas fa-link otro"></i> Otro enlace
+                            </button>
+                        </div>
+                        <div class="campo" style="margin-bottom:14px;">
+                            <label><i class="fas fa-link"></i> URL del enlace</label>
+                            <input type="text" name="enlace_url" id="enlace-url"
+                                   placeholder="https://www.youtube.com/watch?v=..."
+                                   oninput="previsualizarEnlace(this.value)">
+                            <input type="hidden" name="es_enlace" value="0" id="es-enlace-hidden">
+                        </div>
+                        <div class="preview-enlace" id="preview-enlace"></div>
+                        <div class="campo" style="margin-bottom:0;">
+                            <label><i class="fas fa-comment-alt"></i> Descripción del enlace</label>
+                            <input type="text" name="descripcion_enlace" placeholder="Breve descripción de este enlace">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btns">
+                    <button type="submit" class="btn-publicar"><i class="fas fa-paper-plane"></i> Publicar Tema</button>
+                    <a href="{{ url_for('ver_materia', materia_id=materia_id) }}" class="btn-cancelar"><i class="fas fa-times"></i> Cancelar</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="footer">UPTI &copy; 2025 — Plataforma Académica</div>
+
+<script>
+    // ── Etiquetas ──
+    const etiquetasSeleccionadas = new Set();
+
+    function toggleEtiqueta(btn) {
+        const et = btn.dataset.etiqueta;
+        if (etiquetasSeleccionadas.has(et)) {
+            etiquetasSeleccionadas.delete(et);
+            btn.classList.remove('activa');
+        } else {
+            etiquetasSeleccionadas.add(et);
+            btn.classList.add('activa');
+        }
+        document.getElementById('etiquetasInput').value = Array.from(etiquetasSeleccionadas).join(',');
+    }
+
+    // ── Tab archivo / enlace ──
+    function cambiarTab(tab) {
+        const esEnlace = tab === 'enlace';
+        document.getElementById('panel-archivo').classList.toggle('visible', !esEnlace);
+        document.getElementById('panel-enlace').classList.toggle('visible', esEnlace);
+        document.getElementById('es-enlace-hidden').value = esEnlace ? '1' : '0';
+        document.querySelectorAll('.tab-btn').forEach((b, i) => {
+            b.classList.toggle('activo', (i === 0 && !esEnlace) || (i === 1 && esEnlace));
+        });
+        if (!esEnlace) {
+            document.getElementById('preview-enlace').innerHTML = '';
+            document.getElementById('preview-enlace').classList.remove('visible');
+        }
+    }
+
+    let tipoEnlace = 'youtube';
+    function cambiarTipoEnlace(tipo) {
+        tipoEnlace = tipo;
+        document.querySelectorAll('.enlace-tipo-btn').forEach(b => b.classList.remove('activo'));
+        event.currentTarget.classList.add('activo');
+        const placeholders = { youtube: 'https://www.youtube.com/watch?v=...', web: 'https://ejemplo.com/articulo', otro: 'https://drive.google.com/...' };
+        document.getElementById('enlace-url').placeholder = placeholders[tipo];
+        previsualizarEnlace(document.getElementById('enlace-url').value);
+    }
+
+    function getYoutubeId(url) {
+        const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        return m ? m[1] : null;
+    }
+
+    function previsualizarEnlace(url) {
+        const container = document.getElementById('preview-enlace');
+        if (!url.trim()) { container.innerHTML = ''; container.classList.remove('visible'); return; }
+        const ytId = getYoutubeId(url);
+        if (ytId) {
+            container.innerHTML = `<div class="video-wrap"><iframe src="https://www.youtube.com/embed/${ytId}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+            container.classList.add('visible');
+        } else if (url.startsWith('http')) {
+            let icono = 'fas fa-globe', color = '#1a73e8';
+            if (url.includes('drive.google')) { icono = 'fab fa-google-drive'; }
+            else if (url.includes('github')) { icono = 'fab fa-github'; color = '#333'; }
+            container.innerHTML = `<div class="preview-link-card"><div class="link-icon" style="background:${color}18;color:${color};"><i class="${icono}"></i></div><div><div class="link-url">${url}</div><div class="link-sub">Se abrirá en una nueva pestaña</div></div></div>`;
+            container.classList.add('visible');
+        } else { container.innerHTML = ''; container.classList.remove('visible'); }
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function() {
+        document.getElementById('upload-nombre').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado';
+    });
+</script>
+
+{% include 'chat_ia.html' %}
+</body>
+</html>

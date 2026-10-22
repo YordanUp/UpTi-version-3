@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Búsqueda: {{ query }} | UPTI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo: #800000; --rojo2: #a00000; --rojo-dark: #5a0000;
+            --rojo-glow: rgba(128,0,0,0.09); --bg: #faf7f5; --borde: #eeddd8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: #1a1a1a; }
+
+        /* NAVBAR */
+        .navbar { background: #fff; border-bottom: 1px solid var(--borde); padding: 0 40px; height: 68px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(128,0,0,0.06); }
+        .navbar-left { display: flex; align-items: center; gap: 16px; flex: 1; }
+        .navbar-logo { height: 44px; transition: transform 0.3s; }
+        .navbar-logo:hover { transform: scale(1.05); }
+        .navbar-search { display: flex; align-items: center; background: #f8f8f8; border: 1.5px solid #e0e0e0; border-radius: 50px; height: 38px; padding: 0 16px; gap: 8px; transition: all 0.2s; width: 300px; }
+        .navbar-search:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); width: 360px; }
+        .navbar-search i { color: var(--rojo); font-size: 13px; flex-shrink: 0; }
+        .navbar-search input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.86rem; color: #333; font-family: 'DM Sans', sans-serif; }
+        .navbar-search input::placeholder { color: #bbb; }
+        .navbar-search button { border: none; background: none; cursor: pointer; color: var(--rojo); font-size: 13px; padding: 0; display: flex; align-items: center; }
+        .navbar-right { display: flex; align-items: center; gap: 10px; }
+        .btn-nav { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 16px; border-radius: 50px; font-size: 0.83rem; font-weight: 600; text-decoration: none; transition: all 0.2s; background: var(--rojo-glow); color: var(--rojo); border: 1.5px solid var(--borde); }
+        .btn-nav:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+        .user-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--rojo); box-shadow: 0 0 0 2px var(--rojo-glow); cursor: pointer; transition: transform 0.2s; }
+        .user-avatar:hover { transform: scale(1.08); }
+
+        /* HERO */
+        .hero { background: linear-gradient(135deg, var(--rojo-dark), var(--rojo) 60%, #c0392b); padding: 40px 40px 58px; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 1px, transparent 0, transparent 50%); background-size: 20px 20px; }
+        .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 48px; background: var(--bg); clip-path: ellipse(55% 100% at 50% 100%); }
+        .hero-inner { max-width: 860px; margin: 0 auto; position: relative; }
+        .hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 50px; padding: 4px 12px; font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 900; color: #fff; text-shadow: 0 2px 16px rgba(0,0,0,0.2); margin-bottom: 6px; }
+        .hero-query { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 2px 14px; color: #fff; font-weight: 700; }
+        .hero-sub { color: rgba(255,255,255,0.7); font-size: 0.86rem; margin-bottom: 16px; }
+        .stats-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .stat-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 4px 14px; font-size: 0.78rem; color: rgba(255,255,255,0.85); font-weight: 600; }
+
+        /* FILTROS */
+        .filtros-bar { background: #fff; border-bottom: 1px solid var(--borde); padding: 0 40px; display: flex; align-items: center; gap: 8px; height: 52px; overflow-x: auto; }
+        .filtro-btn { height: 32px; padding: 0 14px; border-radius: 50px; border: 1.5px solid #e8e8e8; background: #f8f8f8; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: #777; white-space: nowrap; transition: all 0.2s; }
+        .filtro-btn:hover { border-color: var(--rojo); color: var(--rojo); background: var(--rojo-glow); }
+        .filtro-btn.activo { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+        .filtros-bar::-webkit-scrollbar { display: none; }
+
+        /* BODY */
+        .page-body { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
+
+        /* SECCIÓN */
+        .seccion { margin-bottom: 32px; }
+        .seccion-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--borde); }
+        .seccion-icon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+        .seccion-titulo { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: #1a1a1a; flex: 1; }
+        .seccion-count { background: var(--rojo-glow); color: var(--rojo); border-radius: 50px; padding: 2px 10px; font-size: 0.72rem; font-weight: 700; }
+
+        /* RESULTADO CARD */
+        .resultado-card { background: #fff; border-radius: 14px; border: 1px solid var(--borde); box-shadow: 0 2px 8px rgba(128,0,0,0.04); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; margin-bottom: 8px; animation: cardIn 0.3s ease both; }
+        .resultado-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(128,0,0,0.10); border-color: var(--rojo); }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .resultado-link { display: flex; align-items: center; gap: 14px; padding: 13px 16px; text-decoration: none; color: inherit; }
+        .resultado-icono { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .resultado-info { flex: 1; min-width: 0; }
+        .resultado-titulo { font-weight: 700; font-size: 0.91rem; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+        .resultado-meta { font-size: 0.74rem; color: #aaa; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .meta-sep { color: #ddd; }
+        .resultado-arrow { color: #ddd; font-size: 0.78rem; transition: color 0.2s, transform 0.2s; flex-shrink: 0; }
+        .resultado-card:hover .resultado-arrow { color: var(--rojo); transform: translateX(3px); }
+
+        /* Colores íconos */
+        .ic-tema    { background: rgba(128,0,0,0.08);   color: var(--rojo); }
+        .ic-archivo { background: rgba(33,115,70,0.08);  color: #217346; }
+        .ic-materia { background: rgba(43,87,154,0.08);  color: #2b579a; }
+        .ic-usuario { background: rgba(108,90,205,0.08); color: #6a5acd; }
+        .ic-pdf     { background: rgba(230,57,70,0.08);  color: #e63946; }
+        .ic-img     { background: rgba(76,201,240,0.08); color: #4cc9f0; }
+        .ic-ppt     { background: rgba(210,71,38,0.08);  color: #d24726; }
+        .ic-link    { background: rgba(255,0,0,0.08);    color: #ff0000; }
+        .ic-yt      { background: rgba(255,0,0,0.08);    color: #ff0000; }
+
+        .avatar-sm { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--borde); flex-shrink: 0; }
+
+        /* Badge especialidad */
+        .esp-badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 50px; padding: 1px 8px; font-size: 0.68rem; font-weight: 700; }
+        .esp-ia   { background: rgba(43,87,154,0.1);  color: #2b579a; }
+        .esp-redes { background: rgba(33,115,70,0.1); color: #217346; }
+        .esp-comun { background: rgba(128,0,0,0.08);  color: var(--rojo); }
+
+        /* EMPTY */
+        .empty-global { text-align: center; padding: 70px 20px; background: #fff; border-radius: 20px; border: 1px solid var(--borde); }
+        .empty-global i { font-size: 3rem; color: #ddd; display: block; margin-bottom: 16px; }
+        .empty-global h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: #555; margin-bottom: 8px; }
+        .empty-global p { color: #aaa; font-size: 0.9rem; }
+        .empty-global .sugerencias { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 18px; }
+        .sugerencia-tag { background: var(--rojo-glow); color: var(--rojo); border: 1px solid var(--borde); border-radius: 50px; padding: 4px 14px; font-size: 0.78rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .sugerencia-tag:hover { background: var(--rojo); color: #fff; }
+
+        @media (max-width: 700px) {
+            .navbar { padding: 0 16px; }
+            .navbar-search { width: 160px; }
+            .filtros-bar { padding: 0 16px; }
+            .hero { padding: 28px 20px 52px; }
+            .page-body { padding: 24px 14px 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="{{ url_for('inicio') }}">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="UPTI" class="navbar-logo">
+        </a>
+        <form action="{{ url_for('buscar') }}" method="GET" class="navbar-search">
+            <i class="fas fa-search"></i>
+            <input type="text" name="q" value="{{ query }}" placeholder="Buscar temas, archivos, materias..." autocomplete="off">
+            <button type="submit"><i class="fas fa-arrow-right"></i></button>
+        </form>
+    </div>
+    <div class="navbar-right">
+        <a href="{{ url_for('inicio') }}" class="btn-nav"><i class="fas fa-home"></i> Inicio</a>
+        {% if usuario %}
+        <a href="{{ url_for('ver_perfil', usuario_id=usuario.id) }}">
+            <img src="{{ url_for('static', filename='perfiles/' + usuario.imagen_perfil) }}" alt="{{ usuario.nombre_usuario }}" class="user-avatar">
+        </a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-inner">
+        <div class="hero-eyebrow"><i class="fas fa-search"></i> Resultados de búsqueda</div>
+        <h1>Resultados para <span class="hero-query">{{ query }}</span></h1>
+        <div class="hero-sub">Búsqueda en temas, archivos, materias y usuarios</div>
+        <div class="stats-row">
+            {% if temas %}<div class="stat-pill"><i class="fas fa-comments"></i> {{ temas|length }} tema{% if temas|length != 1 %}s{% endif %}</div>{% endif %}
+            {% if archivos %}<div class="stat-pill"><i class="fas fa-file"></i> {{ archivos|length }} archivo{% if archivos|length != 1 %}s{% endif %}</div>{% endif %}
+            {% if materias %}<div class="stat-pill"><i class="fas fa-book"></i> {{ materias|length }} materia{% if materias|length != 1 %}s{% endif %}</div>{% endif %}
+            {% if usuarios %}<div class="stat-pill"><i class="fas fa-user"></i> {{ usuarios|length }} usuario{% if usuarios|length != 1 %}s{% endif %}</div>{% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- FILTROS -->
+{% set total = temas|length + archivos|length + materias|length + usuarios|length %}
+{% if total > 0 %}
+<div class="filtros-bar">
+    <button class="filtro-btn activo" onclick="filtrar('todo', this)"><i class="fas fa-border-all"></i> Todo</button>
+    {% if temas %}<button class="filtro-btn" onclick="filtrar('temas', this)"><i class="fas fa-comments"></i> Temas</button>{% endif %}
+    {% if archivos %}<button class="filtro-btn" onclick="filtrar('archivos', this)"><i class="fas fa-file-alt"></i> Archivos</button>{% endif %}
+    {% if materias %}<button class="filtro-btn" onclick="filtrar('materias', this)"><i class="fas fa-book"></i> Materias</button>{% endif %}
+    {% if usuarios %}<button class="filtro-btn" onclick="filtrar('usuarios', this)"><i class="fas fa-users"></i> Usuarios</button>{% endif %}
+</div>
+{% endif %}
+
+<!-- RESULTADOS -->
+<div class="page-body">
+
+{% if total == 0 %}
+<div class="empty-global">
+    <i class="fas fa-search"></i>
+    <h2>Sin resultados para "{{ query }}"</h2>
+    <p>Intenta con otras palabras clave o revisa la ortografía.</p>
+    <div class="sugerencias">
+        <a href="{{ url_for('buscar') }}?q=redes" class="sugerencia-tag">Redes</a>
+        <a href="{{ url_for('buscar') }}?q=programacion" class="sugerencia-tag">Programación</a>
+        <a href="{{ url_for('buscar') }}?q=base+de+datos" class="sugerencia-tag">Base de datos</a>
+        <a href="{{ url_for('buscar') }}?q=inteligencia+artificial" class="sugerencia-tag">IA</a>
+    </div>
+</div>
+
+{% else %}
+
+    <!-- TEMAS -->
+    {% if temas %}
+    <div class="seccion" data-tipo="temas">
+        <div class="seccion-header">
+            <div class="seccion-icon ic-tema"><i class="fas fa-comments"></i></div>
+            <div class="seccion-titulo">Temas</div>
+            <span class="seccion-count">{{ temas|length }}</span>
+        </div>
+        {% for tema in temas %}
+        <div class="resultado-card">
+            <a href="{{ url_for('ver_tema', tema_id=tema.id) }}" class="resultado-link">
+                <div class="resultado-icono ic-tema"><i class="fas fa-comments"></i></div>
+                <div class="resultado-info">
+                    <div class="resultado-titulo">{{ tema.titulo }}</div>
+                    <div class="resultado-meta">
+                        <span>{{ tema.materia.nombre }}</span>
+                        <span class="meta-sep">·</span>
+                        <span>{{ tema.autor.nombre_usuario }}</span>
+                        <span class="meta-sep">·</span>
+                        <span>{{ tema.fecha_creacion.strftime('%d/%m/%Y') }}</span>
+                        {% if tema.archivos|length > 0 %}
+                        <span class="meta-sep">·</span>
+                        <span><i class="fas fa-paperclip"></i> {{ tema.archivos|length }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right resultado-arrow"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ARCHIVOS -->
+    {% if archivos %}
+    <div class="seccion" data-tipo="archivos">
+        <div class="seccion-header">
+            <div class="seccion-icon ic-archivo"><i class="fas fa-file-alt"></i></div>
+            <div class="seccion-titulo">Archivos</div>
+            <span class="seccion-count">{{ archivos|length }}</span>
+        </div>
+        {% for archivo in archivos %}
+        <div class="resultado-card">
+            <a href="{{ url_for('ver_tema', tema_id=archivo.tema_id) }}" class="resultado-link">
+                {% set ext = archivo.nombre_archivo.rsplit('.', 1)[1].lower() if '.' in archivo.nombre_archivo else '' %}
+                {% if archivo.es_enlace and ('youtube' in archivo.ruta or 'youtu.be' in archivo.ruta) %}
+                    <div class="resultado-icono ic-yt"><i class="fab fa-youtube"></i></div>
+                {% elif archivo.es_enlace %}
+                    <div class="resultado-icono ic-link"><i class="fas fa-link"></i></div>
+                {% elif ext in ['doc','docx'] %}
+                    <div class="resultado-icono ic-materia"><i class="fas fa-file-word"></i></div>
+                {% elif ext in ['xls','xlsx'] %}
+                    <div class="resultado-icono ic-archivo"><i class="fas fa-file-excel"></i></div>
+                {% elif ext == 'pdf' %}
+                    <div class="resultado-icono ic-pdf"><i class="fas fa-file-pdf"></i></div>
+                {% elif ext in ['jpg','jpeg','png','gif'] %}
+                    <div class="resultado-icono ic-img"><i class="fas fa-file-image"></i></div>
+                {% elif ext in ['ppt','pptx'] %}
+                    <div class="resultado-icono ic-ppt"><i class="fas fa-file-powerpoint"></i></div>
+                {% else %}
+                    <div class="resultado-icono ic-archivo"><i class="fas fa-file-alt"></i></div>
+                {% endif %}
+                <div class="resultado-info">
+                    <div class="resultado-titulo">{{ archivo.nombre_archivo }}</div>
+                    <div class="resultado-meta">
+                        <span>{{ archivo.tema.titulo }}</span>
+                        <span class="meta-sep">·</span>
+                        <span>{{ archivo.autor.nombre_usuario }}</span>
+                        <span class="meta-sep">·</span>
+                        <span>{{ archivo.fecha_subida.strftime('%d/%m/%Y') }}</span>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right resultado-arrow"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- MATERIAS -->
+    {% if materias %}
+    <div class="seccion" data-tipo="materias">
+        <div class="seccion-header">
+            <div class="seccion-icon ic-materia"><i class="fas fa-book"></i></div>
+            <div class="seccion-titulo">Materias</div>
+            <span class="seccion-count">{{ materias|length }}</span>
+        </div>
+        {% for materia in materias %}
+        <div class="resultado-card">
+            <a href="{{ url_for('ver_materia', materia_id=materia.id) }}" class="resultado-link">
+                <div class="resultado-icono ic-materia"><i class="fas fa-book-open"></i></div>
+                <div class="resultado-info">
+                    <div class="resultado-titulo">{{ materia.nombre }}</div>
+                    <div class="resultado-meta">
+                        <span>{{ materia.cuatrimestre.nombre }}</span>
+                        {% if materia.cuatrimestre.especialidad %}
+                        <span class="meta-sep">·</span>
+                        <span class="esp-badge {% if 'IA' in materia.cuatrimestre.especialidad or 'Inteligencia' in materia.cuatrimestre.especialidad %}esp-ia{% elif 'Redes' in materia.cuatrimestre.especialidad %}esp-redes{% else %}esp-comun{% endif %}">
+                            {{ materia.cuatrimestre.especialidad }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right resultado-arrow"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- USUARIOS -->
+    {% if usuarios %}
+    <div class="seccion" data-tipo="usuarios">
+        <div class="seccion-header">
+            <div class="seccion-icon ic-usuario"><i class="fas fa-users"></i></div>
+            <div class="seccion-titulo">Usuarios</div>
+            <span class="seccion-count">{{ usuarios|length }}</span>
+        </div>
+        {% for u in usuarios %}
+        <div class="resultado-card">
+            <a href="{{ url_for('ver_perfil', usuario_id=u.id) }}" class="resultado-link">
+                <img src="{{ url_for('static', filename='perfiles/' + u.imagen_perfil) }}" alt="{{ u.nombre_usuario }}" class="avatar-sm">
+                <div class="resultado-info">
+                    <div class="resultado-titulo">{{ u.nombre_usuario }}</div>
+                    <div class="resultado-meta">
+                        {% if u.cuatrimestre %}<span>{{ u.cuatrimestre.nombre }}</span>{% endif %}
+                        {% if u.grupo %}<span class="meta-sep">·</span><span>Grupo {{ u.grupo }}</span>{% endif %}
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right resultado-arrow"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+{% endif %}
+</div>
+
+<script>
+    function filtrar(tipo, btn) {
+        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        document.querySelectorAll('.seccion[data-tipo]').forEach(s => {
+            s.style.display = (tipo === 'todo' || s.dataset.tipo === tipo) ? 'block' : 'none';
+        });
+    }
+</script>
+{% include 'chat_ia.html' %}
+</body>
+</html>

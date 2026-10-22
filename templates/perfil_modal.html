@@ -1,0 +1,109 @@
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap');
+
+    .modal-perfil-wrap {
+        font-family: 'DM Sans', sans-serif;
+        overflow: hidden;
+        border-radius: 20px;
+    }
+
+    /* Hero */
+    .mp-hero {
+        background: linear-gradient(135deg, #5a0000, #800000 60%, #c0392b);
+        padding: 28px 24px 44px;
+        text-align: center; position: relative; overflow: hidden;
+    }
+    .mp-hero::before {
+        content: ''; position: absolute; inset: 0;
+        background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 1px, transparent 0, transparent 50%);
+        background-size: 20px 20px;
+    }
+    .mp-hero::after {
+        content: ''; position: absolute;
+        bottom: -1px; left: 0; right: 0; height: 32px;
+        background: #fff; clip-path: ellipse(55% 100% at 50% 100%);
+    }
+    .mp-avatar {
+        width: 86px; height: 86px; border-radius: 50%; object-fit: cover;
+        border: 4px solid rgba(255,255,255,0.8);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        margin-bottom: 12px; position: relative; z-index: 1;
+    }
+    .mp-nombre {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 1.15rem; font-weight: 700; color: #fff;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        margin-bottom: 3px; position: relative; z-index: 1;
+    }
+    .mp-correo {
+        font-size: 0.78rem; color: rgba(255,255,255,0.68);
+        position: relative; z-index: 1;
+    }
+
+    /* Info */
+    .mp-info { padding: 10px 20px 20px; }
+    .mp-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 11px 0; border-bottom: 1px solid #f5f0ee;
+    }
+    .mp-item:last-child { border-bottom: none; }
+    .mp-icon {
+        width: 34px; height: 34px; border-radius: 10px;
+        background: rgba(128,0,0,0.08); color: #800000;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px; flex-shrink: 0;
+    }
+    .mp-label {
+        font-size: 0.7rem; font-weight: 700; color: #800000;
+        text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;
+    }
+    .mp-value { font-size: 0.88rem; font-weight: 600; color: #1a1a1a; }
+    .mp-value.vacio { color: #bbb; font-style: italic; font-weight: 400; }
+
+    /* Descripción */
+    .mp-desc {
+        margin: 4px 0 0; padding: 10px 14px;
+        background: #fdf9f8; border-radius: 10px;
+        border-left: 3px solid #800000;
+        font-size: 0.85rem; color: #555; line-height: 1.55;
+    }
+</style>
+
+<div class="modal-perfil-wrap">
+    <div class="mp-hero">
+        <img src="{{ url_for('static', filename='perfiles/' + usuario.imagen_perfil) }}"
+             alt="{{ usuario.nombre_usuario }}" class="mp-avatar">
+        <div class="mp-nombre">{{ usuario.nombre_usuario }}</div>
+        <div class="mp-correo">{{ usuario.correo }}</div>
+    </div>
+
+    <div class="mp-info">
+        <div class="mp-item">
+            <div class="mp-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div>
+                <div class="mp-label">Cuatrimestre</div>
+                <div class="mp-value {% if not usuario.cuatrimestre %}vacio{% endif %}">
+                    {{ usuario.cuatrimestre.nombre if usuario.cuatrimestre else 'No asignado' }}
+                </div>
+            </div>
+        </div>
+        <div class="mp-item">
+            <div class="mp-icon"><i class="fas fa-users"></i></div>
+            <div>
+                <div class="mp-label">Grupo</div>
+                <div class="mp-value {% if not usuario.grupo %}vacio{% endif %}">
+                    {{ usuario.grupo if usuario.grupo else 'No asignado' }}
+                </div>
+            </div>
+        </div>
+        {% if usuario.descripcion %}
+        <div class="mp-item" style="align-items:flex-start;">
+            <div class="mp-icon"><i class="fas fa-info-circle"></i></div>
+            <div style="flex:1;">
+                <div class="mp-label">Descripción</div>
+                <div class="mp-desc">{{ usuario.descripcion }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>

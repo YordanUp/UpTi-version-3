@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Subir contenido | {{ tema.titulo }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo: #800000; --rojo2: #a00000; --rojo-dark: #5a0000;
+            --rojo-glow: rgba(128,0,0,0.09); --bg: #faf7f5; --borde: #eeddd8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: #1a1a1a;
+            background-image: radial-gradient(ellipse at 10% 10%, rgba(128,0,0,0.04) 0%, transparent 50%), radial-gradient(ellipse at 90% 90%, rgba(128,0,0,0.03) 0%, transparent 50%); }
+
+        .navbar { background: #fff; border-bottom: 1px solid var(--borde); padding: 0 40px; height: 68px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(128,0,0,0.06); }
+        .navbar-left { display: flex; align-items: center; gap: 16px; }
+        .navbar-logo { height: 44px; transition: transform 0.3s; }
+        .navbar-logo:hover { transform: scale(1.05); }
+        .btn-volver { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 16px; border-radius: 50px; font-size: 0.83rem; font-weight: 600; text-decoration: none; background: var(--rojo-glow); color: var(--rojo); border: 1.5px solid var(--borde); transition: all 0.2s; }
+        .btn-volver:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+
+        .hero { background: linear-gradient(135deg, var(--rojo-dark), var(--rojo) 60%, #c0392b); padding: 42px 40px 60px; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 1px, transparent 0, transparent 50%); background-size: 20px 20px; }
+        .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 48px; background: var(--bg); clip-path: ellipse(55% 100% at 50% 100%); }
+        .hero-inner { max-width: 860px; margin: 0 auto; position: relative; }
+        .hero-autor { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .hero-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2.5px solid rgba(255,255,255,0.7); }
+        .hero-autor-nombre { font-weight: 700; color: #fff; font-size: 0.95rem; }
+        .hero-autor-info { color: rgba(255,255,255,0.8); font-size: 0.86rem; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 900; color: #fff; text-shadow: 0 2px 16px rgba(0,0,0,0.2); line-height: 1.3; margin-bottom: 8px; }
+        .hero-tema { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 50px; padding: 5px 14px; font-size: 0.8rem; color: #fff; margin-top: 10px; backdrop-filter: blur(6px); }
+
+        .page-body { max-width: 1000px; margin: 0 auto; padding: 36px 20px 60px; display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+        @media (max-width: 768px) { .page-body { grid-template-columns: 1fr; } .panel-tips { order: 2; } .navbar { padding: 0 16px; } .hero { padding: 28px 20px 52px; } }
+
+        .form-card { background: #fff; border-radius: 22px; border: 1px solid var(--borde); box-shadow: 0 4px 20px rgba(128,0,0,0.07); overflow: hidden; }
+        .form-card-header { padding: 18px 28px; border-bottom: 1px solid var(--borde); display: flex; align-items: center; gap: 10px; font-size: 0.78rem; font-weight: 700; color: var(--rojo); text-transform: uppercase; letter-spacing: 1px; }
+        .form-card-body { padding: 28px; }
+
+        .tipo-selector { display: flex; border-radius: 14px; overflow: hidden; border: 1.5px solid var(--borde); margin-bottom: 24px; }
+        .tipo-btn { flex: 1; height: 46px; border: none; background: #f8f8f8; font-family: 'DM Sans', sans-serif; font-size: 0.86rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; color: #999; transition: all 0.2s; }
+        .tipo-btn:first-child { border-right: 1.5px solid var(--borde); }
+        .tipo-btn.active { background: var(--rojo); color: #fff; }
+
+        /* Drop zone */
+        .drop-zone { border: 2px dashed #ddd; border-radius: 16px; padding: 32px 20px; text-align: center; background: #fafafa; cursor: pointer; transition: all 0.2s; margin-bottom: 8px; }
+        .drop-zone:hover, .drop-zone.dragover { border-color: var(--rojo); background: rgba(128,0,0,0.03); }
+        .drop-icon { font-size: 2.2rem; color: var(--rojo); margin-bottom: 10px; display: block; }
+        .drop-txt { font-size: 0.88rem; color: #666; }
+        .drop-txt strong { color: var(--rojo); }
+        .drop-file-name { font-size: 0.8rem; color: #aaa; margin-top: 6px; }
+        .file-real { display: none; }
+
+        .btn-quitar { display: none; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: 50px; background: rgba(220,53,69,0.08); color: #dc3545; border: 1px solid rgba(220,53,69,0.2); font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; margin-bottom: 18px; }
+        .btn-quitar:hover { background: #dc3545; color: #fff; }
+
+        /* Preview archivo */
+        .file-preview { display: none; margin-bottom: 18px; border-radius: 14px; overflow: hidden; border: 1.5px solid var(--borde); }
+        .file-preview img { width: 100%; max-height: 300px; object-fit: contain; background: #f0f0f0; display: block; }
+        .file-preview-pdf { width: 100%; height: 360px; border: none; display: block; }
+        .file-preview-info { padding: 10px 14px; background: #fdf9f8; display: flex; align-items: center; gap: 10px; }
+        .file-preview-info .fp-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .file-preview-info .fp-name { font-size: 0.82rem; font-weight: 600; color: #333; }
+        .file-preview-info .fp-size { font-size: 0.74rem; color: #aaa; }
+
+        /* Panel enlace */
+        .panel-enlace { display: none; margin-bottom: 18px; }
+
+        /* Tipos de enlace */
+        .enlace-tipos { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .enlace-tipo-btn { height: 36px; padding: 0 14px; border-radius: 50px; border: 1.5px solid #e0e0e0; background: #fff; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; color: #777; }
+        .enlace-tipo-btn.activo { border-color: var(--rojo); background: var(--rojo-glow); color: var(--rojo); }
+        .enlace-tipo-btn:hover:not(.activo) { background: #f0f0f0; }
+
+        /* Preview enlace */
+        .preview-enlace { display: none; margin-top: 12px; border-radius: 14px; overflow: hidden; }
+        .preview-enlace.visible { display: block; }
+        .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+        .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .preview-link-card { display: flex; align-items: center; gap: 12px; background: #fff; border: 1.5px solid var(--borde); border-radius: 14px; padding: 14px 18px; }
+        .preview-link-card .link-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .preview-link-card .link-url { font-size: 0.84rem; color: var(--rojo); font-weight: 600; word-break: break-all; }
+        .preview-link-card .link-sub { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
+
+        /* Campos */
+        .campo { margin-bottom: 18px; }
+        .campo label { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 700; color: var(--rojo); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .input-row { display: flex; align-items: center; background: #f8f8f8; border: 1.5px solid #e0e0e0; border-radius: 50px; height: 50px; padding: 0 18px; gap: 10px; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+        .input-row:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+        .input-row .fi { color: var(--rojo); font-size: 14px; flex-shrink: 0; width: 16px; text-align: center; }
+        .input-row input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.9rem; color: #333; min-width: 0; font-family: 'DM Sans', sans-serif; height: 100%; }
+        .input-row input::placeholder { color: #bbb; }
+        .hint { font-size: 0.74rem; color: #bbb; margin-top: 5px; padding-left: 4px; }
+
+        .btn-subir { width: 100%; height: 52px; border-radius: 14px; background: linear-gradient(135deg, var(--rojo), #c0392b); color: #fff; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 6px 18px rgba(128,0,0,0.28); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-subir:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(128,0,0,0.32); }
+        .btn-subir:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Panel tips */
+        .panel-tips { background: #fff; border-radius: 22px; border: 1px solid var(--borde); box-shadow: 0 4px 20px rgba(128,0,0,0.06); overflow: hidden; position: sticky; top: 88px; }
+        .tips-header { background: linear-gradient(135deg, var(--rojo-dark), var(--rojo)); padding: 18px 22px; display: flex; align-items: center; gap: 10px; }
+        .tips-header span { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: #fff; }
+        .tips-header i { color: rgba(255,255,255,0.8); }
+        .tips-body { padding: 20px 22px; }
+        .tema-badge { background: var(--rojo-glow); border: 1px solid var(--borde); border-radius: 12px; padding: 12px 14px; margin-bottom: 18px; }
+        .tema-badge-label { font-size: 0.7rem; font-weight: 700; color: var(--rojo); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .tema-badge-value { font-size: 0.88rem; font-weight: 600; color: #333; }
+        .formatos { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+        .formato-tag { background: var(--rojo); color: #fff; border-radius: 50px; padding: 3px 12px; font-size: 0.72rem; font-weight: 700; }
+        .tip-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; font-size: 0.84rem; color: #555; line-height: 1.5; }
+        .tip-item:last-child { margin-bottom: 0; }
+        .tip-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--rojo-glow); color: var(--rojo); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="{{ url_for('inicio') }}">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="UPTI" class="navbar-logo">
+        </a>
+        <a href="{{ url_for('ver_tema', tema_id=tema.id) }}" class="btn-volver">
+            <i class="fas fa-arrow-left"></i> Volver al tema
+        </a>
+    </div>
+</nav>
+
+<div class="hero">
+    <div class="hero-inner">
+        <div class="hero-autor">
+            <img src="{{ url_for('static', filename='perfiles/' + usuario.imagen_perfil) }}"
+                 alt="{{ usuario.nombre_usuario }}" class="hero-avatar">
+            <div>
+                <div class="hero-autor-nombre">{{ usuario.nombre_usuario }}</div>
+                <div class="hero-autor-info">Subiendo contenido</div>
+            </div>
+        </div>
+        <h1>Compartir recurso</h1>
+        <div class="hero-tema"><i class="fas fa-book-open"></i> {{ tema.titulo }}</div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="form-card">
+        <div class="form-card-header"><i class="fas fa-upload"></i> Nuevo recurso</div>
+        <div class="form-card-body">
+            <form method="POST" enctype="multipart/form-data" id="uploadForm">
+
+                <div class="tipo-selector">
+                    <button type="button" class="tipo-btn active" id="btnFile">
+                        <i class="fas fa-file-upload"></i> Subir archivo
+                    </button>
+                    <button type="button" class="tipo-btn" id="btnLink">
+                        <i class="fas fa-link"></i> Enlace / YouTube
+                    </button>
+                </div>
+
+                <!-- Panel archivo -->
+                <div id="panelArchivo">
+                    <div class="drop-zone" id="dropZone">
+                        <i class="fas fa-cloud-upload-alt drop-icon"></i>
+                        <div class="drop-txt"><strong>Haz clic</strong> o arrastra tu archivo aquí</div>
+                        <div class="drop-file-name" id="fileName">Ningún archivo seleccionado</div>
+                        <input type="file" name="archivo" id="archivoInput" class="file-real"
+                               accept=".pdf,.png,.jpg,.jpeg,.gif,.docx,.txt,.xlsx,.pptx">
+                    </div>
+                    <button type="button" class="btn-quitar" id="btnQuitar">
+                        <i class="fas fa-times"></i> Quitar archivo
+                    </button>
+                    <!-- Preview archivo -->
+                    <div class="file-preview" id="filePreview">
+                        <div id="filePreviewContent"></div>
+                        <div class="file-preview-info">
+                            <div class="fp-icon" id="fpIcon"></div>
+                            <div>
+                                <div class="fp-name" id="fpName"></div>
+                                <div class="fp-size" id="fpSize"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel enlace -->
+                <div class="panel-enlace" id="panelEnlace">
+                    <!-- Tipos -->
+                    <div class="enlace-tipos">
+                        <button type="button" class="enlace-tipo-btn activo" onclick="setTipoEnlace('youtube', this)">
+                            <i class="fab fa-youtube" style="color:#ff0000;"></i> YouTube
+                        </button>
+                        <button type="button" class="enlace-tipo-btn" onclick="setTipoEnlace('web', this)">
+                            <i class="fas fa-globe" style="color:#1a73e8;"></i> Sitio web
+                        </button>
+                        <button type="button" class="enlace-tipo-btn" onclick="setTipoEnlace('otro', this)">
+                            <i class="fas fa-link" style="color:#555;"></i> Otro enlace
+                        </button>
+                    </div>
+
+                    <div class="campo">
+                        <label><i class="fas fa-link fi"></i> URL del enlace</label>
+                        <div class="input-row">
+                            <i class="fas fa-globe fi"></i>
+                            <input type="url" name="linkUrl" id="linkUrl"
+                                   placeholder="https://www.youtube.com/watch?v=..."
+                                   oninput="previsualizarEnlace(this.value)">
+                        </div>
+                        <div class="hint">YouTube, artículos, recursos educativos, Drive, etc.</div>
+                    </div>
+
+                    <!-- Preview enlace -->
+                    <div class="preview-enlace" id="previewEnlace"></div>
+                </div>
+
+                <!-- Descripción -->
+                <div class="campo">
+                    <label><i class="fas fa-align-left fi"></i> Descripción</label>
+                    <div class="input-row">
+                        <i class="fas fa-pen fi"></i>
+                        <input type="text" name="descripcion" id="descripcion" required
+                               placeholder="Ej: Video explicativo del tema 3...">
+                    </div>
+                    <div class="hint">Explica brevemente qué contiene este recurso.</div>
+                </div>
+
+                <input type="hidden" name="contentType" id="contentType" value="file">
+
+                <button type="submit" class="btn-subir" id="btnSubir">
+                    <span id="btnTxt"><i class="fas fa-upload"></i> &nbsp;Subir contenido</span>
+                    <div class="spinner" id="spinner"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Panel tips -->
+    <div class="panel-tips">
+        <div class="tips-header">
+            <i class="fas fa-lightbulb"></i>
+            <span>Consejos para compartir</span>
+        </div>
+        <div class="tips-body">
+            <div class="tema-badge">
+                <div class="tema-badge-label">Tema actual</div>
+                <div class="tema-badge-value">{{ tema.titulo }}</div>
+            </div>
+            <div class="formatos">
+                <span class="formato-tag">PDF</span>
+                <span class="formato-tag">DOCX</span>
+                <span class="formato-tag">PPTX</span>
+                <span class="formato-tag">JPG/PNG</span>
+                <span class="formato-tag">YouTube</span>
+                <span class="formato-tag">Enlaces</span>
+            </div>
+            <div class="tip-item"><div class="tip-dot"><i class="fas fa-file"></i></div><div><strong>Archivos:</strong> Máximo 10 MB. Usa formatos universales.</div></div>
+            <div class="tip-item"><div class="tip-dot"><i class="fab fa-youtube"></i></div><div><strong>YouTube:</strong> El video se mostrará embebido directamente en el tema.</div></div>
+            <div class="tip-item"><div class="tip-dot"><i class="fas fa-globe"></i></div><div><strong>Artículos:</strong> Comparte enlaces a recursos educativos relevantes.</div></div>
+            <div class="tip-item"><div class="tip-dot"><i class="fas fa-pen"></i></div><div><strong>Descripción:</strong> Explica cómo el recurso se relaciona con el tema.</div></div>
+            <div class="tip-item"><div class="tip-dot"><i class="fas fa-shield-alt"></i></div><div><strong>Derechos:</strong> Solo comparte contenido que puedas distribuir legalmente.</div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ── TABS ──
+    const btnFile = document.getElementById('btnFile');
+    const btnLink = document.getElementById('btnLink');
+    const panelArchivo = document.getElementById('panelArchivo');
+    const panelEnlace  = document.getElementById('panelEnlace');
+    const contentType  = document.getElementById('contentType');
+    const btnTxt       = document.getElementById('btnTxt');
+
+    btnFile.addEventListener('click', () => {
+        btnFile.classList.add('active'); btnLink.classList.remove('active');
+        panelArchivo.style.display = 'block'; panelEnlace.style.display = 'none';
+        contentType.value = 'file';
+        btnTxt.innerHTML = '<i class="fas fa-upload"></i> &nbsp;Subir archivo';
+    });
+    btnLink.addEventListener('click', () => {
+        btnLink.classList.add('active'); btnFile.classList.remove('active');
+        panelArchivo.style.display = 'none'; panelEnlace.style.display = 'block';
+        contentType.value = 'link';
+        btnTxt.innerHTML = '<i class="fas fa-share"></i> &nbsp;Compartir enlace';
+    });
+
+    // ── DROP ZONE ──
+    const dropZone    = document.getElementById('dropZone');
+    const archivoInput = document.getElementById('archivoInput');
+    const fileName    = document.getElementById('fileName');
+    const btnQuitar   = document.getElementById('btnQuitar');
+
+    dropZone.addEventListener('click', () => archivoInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault(); dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+            archivoInput.files = e.dataTransfer.files;
+            archivoInput.dispatchEvent(new Event('change'));
+        }
+    });
+
+    archivoInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        fileName.textContent = file.name;
+        dropZone.style.borderColor = 'var(--rojo)';
+        dropZone.style.background  = 'rgba(128,0,0,0.03)';
+        btnQuitar.style.display    = 'inline-flex';
+        mostrarPreviewArchivo(file);
+    });
+
+    btnQuitar.addEventListener('click', () => {
+        archivoInput.value = '';
+        fileName.textContent = 'Ningún archivo seleccionado';
+        dropZone.style.borderColor = '#ddd';
+        dropZone.style.background  = '#fafafa';
+        btnQuitar.style.display    = 'none';
+        document.getElementById('filePreview').style.display = 'none';
+    });
+
+    // ── PREVIEW ARCHIVO ──
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+        return (bytes/(1024*1024)).toFixed(1) + ' MB';
+    }
+
+    const iconos = {
+        pdf:  { icon: 'fas fa-file-pdf',        color: '#e63946', bg: '#e6394615' },
+        docx: { icon: 'fas fa-file-word',        color: '#2b579a', bg: '#2b579a15' },
+        doc:  { icon: 'fas fa-file-word',        color: '#2b579a', bg: '#2b579a15' },
+        xlsx: { icon: 'fas fa-file-excel',       color: '#217346', bg: '#21734615' },
+        xls:  { icon: 'fas fa-file-excel',       color: '#217346', bg: '#21734615' },
+        pptx: { icon: 'fas fa-file-powerpoint',  color: '#d24726', bg: '#d2472615' },
+        ppt:  { icon: 'fas fa-file-powerpoint',  color: '#d24726', bg: '#d2472615' },
+        txt:  { icon: 'fas fa-file-alt',         color: '#6c757d', bg: '#6c757d15' },
+        zip:  { icon: 'fas fa-file-archive',     color: '#6a5acd', bg: '#6a5acd15' },
+        rar:  { icon: 'fas fa-file-archive',     color: '#6a5acd', bg: '#6a5acd15' },
+    };
+
+    function mostrarPreviewArchivo(file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        const preview = document.getElementById('filePreview');
+        const content = document.getElementById('filePreviewContent');
+        const fpIcon  = document.getElementById('fpIcon');
+        const fpName  = document.getElementById('fpName');
+        const fpSize  = document.getElementById('fpSize');
+
+        fpName.textContent = file.name;
+        fpSize.textContent = formatSize(file.size);
+
+        const info = iconos[ext] || { icon: 'fas fa-file', color: '#6c757d', bg: '#6c757d15' };
+        fpIcon.style.background = info.bg;
+        fpIcon.style.color = info.color;
+        fpIcon.innerHTML = `<i class="${info.icon}"></i>`;
+
+        // Imagen → mostrar
+        if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+            const url = URL.createObjectURL(file);
+            content.innerHTML = `<img src="${url}" alt="${file.name}">`;
+            preview.style.display = 'block';
+        }
+        // PDF → embed
+        else if (ext === 'pdf') {
+            const url = URL.createObjectURL(file);
+            content.innerHTML = `<iframe class="file-preview-pdf" src="${url}"></iframe>`;
+            preview.style.display = 'block';
+        }
+        // Otros → solo info
+        else {
+            content.innerHTML = '';
+            preview.style.display = 'block';
+        }
+    }
+
+    // ── PREVIEW ENLACE ──
+    let tipoEnlace = 'youtube';
+    function setTipoEnlace(tipo, btn) {
+        tipoEnlace = tipo;
+        document.querySelectorAll('.enlace-tipo-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        const ph = { youtube: 'https://www.youtube.com/watch?v=...', web: 'https://ejemplo.com/articulo', otro: 'https://drive.google.com/...' };
+        document.getElementById('linkUrl').placeholder = ph[tipo];
+        previsualizarEnlace(document.getElementById('linkUrl').value);
+    }
+
+    function getYoutubeId(url) {
+        const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        return m ? m[1] : null;
+    }
+
+    function previsualizarEnlace(url) {
+        const container = document.getElementById('previewEnlace');
+        if (!url.trim()) { container.innerHTML = ''; container.classList.remove('visible'); return; }
+
+        const ytId = getYoutubeId(url);
+        if (ytId) {
+            container.innerHTML = `
+                <div class="video-wrap">
+                    <iframe src="https://www.youtube.com/embed/${ytId}"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                </div>`;
+            container.classList.add('visible');
+        } else if (url.startsWith('http')) {
+            let icono = 'fas fa-globe', color = '#1a73e8', bg = '#1a73e815';
+            if (url.includes('drive.google'))  { icono = 'fab fa-google-drive'; }
+            else if (url.includes('docs.google')) { icono = 'fab fa-google'; }
+            else if (url.includes('github'))   { icono = 'fab fa-github'; color = '#333'; bg = '#33333315'; }
+            container.innerHTML = `
+                <div class="preview-link-card">
+                    <div class="link-icon" style="background:${bg};color:${color};">
+                        <i class="${icono}"></i>
+                    </div>
+                    <div>
+                        <div class="link-url">${url}</div>
+                        <div class="link-sub">Se abrirá en nueva pestaña</div>
+                    </div>
+                </div>`;
+            container.classList.add('visible');
+        } else {
+            container.innerHTML = ''; container.classList.remove('visible');
+        }
+    }
+
+    // ── VALIDACIÓN Y SUBMIT ──
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        const tipo = contentType.value;
+        const desc = document.getElementById('descripcion').value.trim();
+        if (desc.length < 5) {
+            alert('Por favor escribe una descripción más detallada (mínimo 5 caracteres).');
+            e.preventDefault(); return;
+        }
+        if (tipo === 'file') {
+            if (!archivoInput.files[0]) { alert('Por favor selecciona un archivo.'); e.preventDefault(); return; }
+            if (archivoInput.files[0].size > 10 * 1024 * 1024) { alert('Archivo demasiado grande. Máximo 10 MB.'); e.preventDefault(); return; }
+        }
+        if (tipo === 'link') {
+            const url = document.getElementById('linkUrl').value.trim();
+            if (!url) { alert('Por favor introduce un enlace válido.'); e.preventDefault(); return; }
+            try { new URL(url); } catch(_) { alert('URL inválida (debe iniciar con http:// o https://).'); e.preventDefault(); return; }
+        }
+        document.getElementById('btnTxt').style.display = 'none';
+        document.getElementById('spinner').style.display = 'block';
+        document.getElementById('btnSubir').disabled = true;
+    });
+</script>
+
+{% include 'chat_ia.html' %}
+</body>
+</html>

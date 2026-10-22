@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inicio | UPTI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo: #800000; --rojo2: #a00000; --rojo-dark: #5a0000;
+            --rojo-glow: rgba(128,0,0,0.09); --bg: #f7f4f2; --borde: #eeddd8;
+            --azul: #1a3a6b; --azul2: #2b579a; --azul-glow: rgba(26,58,107,0.08);
+            --verde: #1a5c38; --verde2: #217346; --verde-glow: rgba(26,92,56,0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh; color: #1a1a1a;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            background: #fff; border-bottom: 1px solid var(--borde);
+            padding: 0 40px; height: 68px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 16px rgba(128,0,0,0.06);
+        }
+        .navbar-left { display: flex; align-items: center; gap: 16px; flex: 1; }
+        .navbar-logo { height: 44px; transition: transform 0.3s; }
+        .navbar-logo:hover { transform: scale(1.05); }
+        .navbar-search {
+            display: flex; align-items: center;
+            background: #f8f8f8; border: 1.5px solid #e0e0e0;
+            border-radius: 50px; height: 38px; padding: 0 16px; gap: 8px;
+            transition: all 0.2s; width: 260px;
+        }
+        .navbar-search:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); width: 300px; }
+        .navbar-search i.si { color: var(--rojo); font-size: 13px; }
+        .navbar-search input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.86rem; font-family: 'DM Sans', sans-serif; }
+        .navbar-search input::placeholder { color: #bbb; }
+        .navbar-search button { border: none; background: none; cursor: pointer; color: var(--rojo); font-size: 13px; padding: 0; display: flex; align-items: center; }
+        .navbar-right { display: flex; align-items: center; gap: 10px; }
+        .btn-nav {
+            display: inline-flex; align-items: center; gap: 7px;
+            height: 36px; padding: 0 16px; border-radius: 50px;
+            font-size: 0.83rem; font-weight: 600; text-decoration: none;
+            transition: all 0.2s; background: var(--rojo-glow); color: var(--rojo);
+            border: 1.5px solid var(--borde);
+        }
+        .btn-nav:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+        .btn-nav.solid { background: var(--rojo); color: #fff; border-color: var(--rojo); box-shadow: 0 3px 10px rgba(128,0,0,0.22); }
+        .btn-nav.solid:hover { background: var(--rojo2); transform: translateY(-1px); }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(135deg, var(--rojo-dark) 0%, var(--rojo) 50%, #b22222 100%);
+            padding: 52px 40px 80px; position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.025) 0, rgba(255,255,255,0.025) 1px, transparent 0, transparent 50%);
+            background-size: 24px 24px;
+        }
+        .hero-orb1 {
+            position: absolute; width: 300px; height: 300px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+            top: -80px; right: 10%; pointer-events: none;
+        }
+        .hero-orb2 {
+            position: absolute; width: 200px; height: 200px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+            bottom: 20px; left: 5%; pointer-events: none;
+        }
+        .hero::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 60px;
+            background: var(--bg); clip-path: ellipse(55% 100% at 50% 100%);
+        }
+        .hero-inner { max-width: 960px; margin: 0 auto; position: relative; display: flex; align-items: center; gap: 24px; }
+        .hero-avatar-wrap {
+            position: relative; flex-shrink: 0;
+        }
+        .hero-avatar {
+            width: 72px; height: 72px; border-radius: 50%; object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.7);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        .hero-avatar-ring {
+            position: absolute; inset: -6px; border-radius: 50%;
+            border: 2px dashed rgba(255,255,255,0.3);
+            animation: spin 12s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .hero-text {}
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 50px; padding: 4px 14px; font-size: 0.75rem; font-weight: 700;
+            color: rgba(255,255,255,0.9); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px;
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 900;
+            color: #fff; text-shadow: 0 2px 20px rgba(0,0,0,0.15); margin-bottom: 6px;
+        }
+        .hero-sub { color: rgba(255,255,255,0.7); font-size: 0.88rem; }
+
+        /* ── PAGE BODY ── */
+        .page-body { max-width: 960px; margin: 0 auto; padding: 40px 20px 60px; }
+
+        /* ── SECCIÓN HEADER ── */
+        .seccion-header {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 20px; margin-top: 36px;
+        }
+        .seccion-header:first-child { margin-top: 0; }
+        .seccion-icon {
+            width: 42px; height: 42px; border-radius: 14px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+        }
+        .seccion-icon.comun { background: linear-gradient(135deg, var(--rojo-dark), var(--rojo)); color: #fff; box-shadow: 0 4px 12px rgba(128,0,0,0.3); }
+        .seccion-icon.ia { background: linear-gradient(135deg, var(--azul), var(--azul2)); color: #fff; box-shadow: 0 4px 12px rgba(26,58,107,0.3); }
+        .seccion-icon.redes { background: linear-gradient(135deg, var(--verde), var(--verde2)); color: #fff; box-shadow: 0 4px 12px rgba(26,92,56,0.3); }
+        .seccion-titulo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem; font-weight: 700; color: #1a1a1a;
+        }
+        .seccion-sub { font-size: 0.78rem; color: #aaa; margin-top: 2px; }
+
+        /* ── GRID ── */
+        .cuatris-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        /* ── CARD ── */
+        .cuatri-card {
+            border-radius: 20px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+            transition: transform 0.22s, box-shadow 0.22s;
+            animation: cardIn 0.4s ease both;
+            cursor: pointer; text-decoration: none; display: block;
+            position: relative;
+        }
+        .cuatri-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.14); }
+
+        @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .cuatri-card:nth-child(1) { animation-delay: 0.00s; }
+        .cuatri-card:nth-child(2) { animation-delay: 0.06s; }
+        .cuatri-card:nth-child(3) { animation-delay: 0.12s; }
+        .cuatri-card:nth-child(4) { animation-delay: 0.18s; }
+        .cuatri-card:nth-child(5) { animation-delay: 0.24s; }
+        .cuatri-card:nth-child(6) { animation-delay: 0.30s; }
+
+        /* Banda de color superior */
+        .card-band {
+            height: 6px; width: 100%;
+        }
+        .card-band.comun { background: linear-gradient(90deg, var(--rojo-dark), var(--rojo), #c0392b); }
+        .card-band.ia    { background: linear-gradient(90deg, var(--azul), var(--azul2), #4a90d9); }
+        .card-band.redes { background: linear-gradient(90deg, var(--verde), var(--verde2), #27ae60); }
+
+        /* Cuerpo de la card */
+        .card-body {
+            background: #fff; padding: 18px 20px;
+            display: flex; align-items: center; gap: 16px;
+        }
+        .card-num {
+            width: 50px; height: 50px; border-radius: 14px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900;
+        }
+        .card-num.comun { background: rgba(128,0,0,0.07); color: var(--rojo); }
+        .card-num.ia    { background: rgba(26,58,107,0.07); color: var(--azul2); }
+        .card-num.redes { background: rgba(26,92,56,0.07); color: var(--verde2); }
+
+        .cuatri-card:hover .card-num.comun { background: var(--rojo); color: #fff; }
+        .cuatri-card:hover .card-num.ia    { background: var(--azul2); color: #fff; }
+        .cuatri-card:hover .card-num.redes { background: var(--verde2); color: #fff; }
+
+        .card-info { flex: 1; min-width: 0; }
+        .card-nombre { font-weight: 700; font-size: 0.96rem; color: #1a1a1a; margin-bottom: 3px; }
+        .card-sub { font-size: 0.74rem; color: #bbb; }
+        .card-esp-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 0.68rem; font-weight: 700; border-radius: 50px;
+            padding: 2px 8px; margin-top: 5px;
+        }
+        .card-esp-badge.ia    { background: rgba(26,58,107,0.08); color: var(--azul2); }
+        .card-esp-badge.redes { background: rgba(26,92,56,0.08); color: var(--verde2); }
+        .card-esp-badge.multi {
+            background: linear-gradient(90deg, rgba(26,58,107,0.08), rgba(26,92,56,0.08));
+            color: #555;
+        }
+
+        .card-arrow {
+            color: #ddd; font-size: 0.85rem; transition: color 0.2s, transform 0.2s;
+            flex-shrink: 0;
+        }
+        .cuatri-card:hover .card-arrow { color: #999; transform: translateX(3px); }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 500;
+            align-items: center; justify-content: center;
+            backdrop-filter: blur(6px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #fff; border-radius: 28px;
+            width: 90%; max-width: 440px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.25);
+            overflow: hidden; animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.88) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-header {
+            padding: 30px 28px 24px; position: relative;
+            background: linear-gradient(135deg, #f7f4f2, #fff);
+            border-bottom: 1px solid #f0ebe8;
+        }
+        .modal-close {
+            position: absolute; top: 16px; right: 16px;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #f0f0f0; border: none; color: #888;
+            font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: #e0e0e0; color: #333; }
+        .modal-cuatri-label {
+            font-size: 0.72rem; font-weight: 700; color: #aaa;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+        }
+        .modal-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem; font-weight: 900; color: #1a1a1a; margin-bottom: 4px;
+        }
+        .modal-header p { color: #aaa; font-size: 0.84rem; }
+
+        .modal-opciones { padding: 20px 24px 28px; display: flex; flex-direction: column; gap: 12px; }
+
+        .btn-esp {
+            display: flex; align-items: center; gap: 16px;
+            padding: 18px 20px; border-radius: 18px;
+            border: 2px solid #f0ebe8; background: #fff;
+            cursor: pointer; text-decoration: none; color: #1a1a1a;
+            transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+            position: relative; overflow: hidden;
+        }
+        .btn-esp::before {
+            content: ''; position: absolute; inset: 0; opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .btn-esp.ia::before  { background: linear-gradient(135deg, rgba(26,58,107,0.04), rgba(74,144,217,0.04)); }
+        .btn-esp.redes::before { background: linear-gradient(135deg, rgba(26,92,56,0.04), rgba(39,174,96,0.04)); }
+        .btn-esp:hover::before { opacity: 1; }
+        .btn-esp.ia:hover  { border-color: var(--azul2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,58,107,0.12); }
+        .btn-esp.redes:hover { border-color: var(--verde2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,92,56,0.12); }
+
+        .esp-icon {
+            width: 52px; height: 52px; border-radius: 16px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+        .btn-esp:hover .esp-icon { transform: scale(1.1); }
+        .esp-icon.ia    { background: linear-gradient(135deg, rgba(26,58,107,0.1), rgba(74,144,217,0.15)); }
+        .esp-icon.redes { background: linear-gradient(135deg, rgba(26,92,56,0.1), rgba(39,174,96,0.15)); }
+
+        .esp-info { flex: 1; text-align: left; }
+        .esp-titulo { font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+        .esp-titulo.ia { color: var(--azul2); }
+        .esp-titulo.redes { color: var(--verde2); }
+        .esp-sub { font-size: 0.74rem; color: #bbb; }
+
+        .esp-arrow { color: #ccc; font-size: 0.9rem; transition: color 0.2s, transform 0.2s; }
+        .btn-esp:hover .esp-arrow { color: #999; transform: translateX(3px); }
+
+        .page-footer { text-align: center; padding: 28px; font-size: 0.78rem; color: #bbb; border-top: 1px solid var(--borde); margin-top: 20px; }
+
+        @media (max-width: 700px) {
+            .navbar { padding: 0 16px; }
+            .hero { padding: 32px 20px 60px; }
+            .hero-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .page-body { padding: 24px 16px 40px; }
+            .cuatris-grid { grid-template-columns: 1fr; }
+            .navbar-search { width: 160px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="{{ url_for('inicio') }}">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="UPTI" class="navbar-logo">
+        </a>
+        <form action="{{ url_for('buscar') }}" method="GET" class="navbar-search">
+            <i class="fas fa-search si"></i>
+            <input type="text" name="q" placeholder="Buscar temas, archivos..." autocomplete="off">
+            <button type="submit"><i class="fas fa-arrow-right"></i></button>
+        </form>
+    </div>
+    <div class="navbar-right">
+        <a href="{{ url_for('ver_perfil', usuario_id=usuario.id) }}" class="btn-nav">
+            <i class="fas fa-user"></i> Mi perfil
+        </a>
+        <a href="{{ url_for('logout') }}" class="btn-nav solid">
+            <i class="fas fa-sign-out-alt"></i> Salir
+        </a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-orb1"></div>
+    <div class="hero-orb2"></div>
+    <div class="hero-inner">
+        <div class="hero-avatar-wrap">
+            <img src="{{ url_for('static', filename='perfiles/' + usuario.imagen_perfil) }}"
+                 alt="{{ usuario.nombre_usuario }}" class="hero-avatar">
+            <div class="hero-avatar-ring"></div>
+        </div>
+        <div class="hero-text">
+            <div class="hero-badge"><i class="fas fa-graduation-cap"></i> UPTI — Plataforma Académica</div>
+            <h1>Hola, {{ usuario.nombre_usuario }} 👋</h1>
+            <div class="hero-sub">Selecciona tu cuatrimestre para acceder al foro</div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+
+    <!-- CICLO COMÚN -->
+    <div class="seccion-header">
+        <div class="seccion-icon comun"><i class="fas fa-book-open"></i></div>
+        <div>
+            <div class="seccion-titulo">Primer Ciclo de Formación</div>
+            <div class="seccion-sub">Materias comunes para todas las especialidades</div>
+        </div>
+    </div>
+    <div class="cuatris-grid">
+        {% for cuatri in cuatrimestres if cuatri.nombre in ['1er Cuatrimestre', '2do Cuatrimestre', '3er Cuatrimestre'] %}
+        <a href="{{ url_for('ver_cuatrimestre', cuatrimestre_id=cuatri.id) }}" class="cuatri-card">
+            <div class="card-band comun"></div>
+            <div class="card-body">
+                <div class="card-num comun">{{ loop.index }}</div>
+                <div class="card-info">
+                    <div class="card-nombre">{{ cuatri.nombre }}</div>
+                    <div class="card-sub">{{ cuatri.materias|length }} materias · Ciclo común</div>
+                </div>
+                <i class="fas fa-chevron-right card-arrow"></i>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- SEGUNDO Y TERCER CICLO -->
+    <div class="seccion-header" style="margin-top: 40px;">
+        <div class="seccion-icon ia"><i class="fas fa-brain"></i></div>
+        <div>
+            <div class="seccion-titulo">Segundo y Tercer Ciclo</div>
+            <div class="seccion-sub">Elige tu especialidad al seleccionar el cuatrimestre</div>
+        </div>
+    </div>
+    <div class="cuatris-grid">
+        {% set cuatris_esp = ['4to', '5to', '6to', '7mo', '8vo', '9no'] %}
+        {% set numeros = ['4', '5', '6', '7', '8', '9'] %}
+        {% set nombres_esp = ['4to Cuatrimestre', '5to Cuatrimestre', '6to Cuatrimestre', '7mo Cuatrimestre', '8vo Cuatrimestre', '9no Cuatrimestre'] %}
+        {% set vistos = namespace(nums=[]) %}
+        {% for cuatri in cuatrimestres %}
+            {% set num = cuatri.nombre.split(' ')[0] %}
+            {% if num in cuatris_esp and num not in vistos.nums %}
+                {% set _ = vistos.nums.append(num) %}
+                {% set idx = loop.index %}
+                <div class="cuatri-card" onclick="abrirModal('{{ num }}')">
+                    <div class="card-band" style="background: linear-gradient(90deg, var(--azul), var(--azul2), var(--verde2));"></div>
+                    <div class="card-body">
+                        <div class="card-num ia">{{ loop.index + 3 }}</div>
+                        <div class="card-info">
+                            <div class="card-nombre">{{ num }} Cuatrimestre</div>
+                            <div class="card-sub">2 especialidades disponibles</div>
+                            <div style="display:flex; gap:5px; margin-top:6px;">
+                                <span class="card-esp-badge ia">🤖 IA</span>
+                                <span class="card-esp-badge redes">🌐 Redes</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right card-arrow"></i>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+</div>
+
+<div class="page-footer">UPTI &copy; 2025 — Plataforma Académica</div>
+
+<!-- MODAL ESPECIALIDAD -->
+<div class="modal-overlay" id="modalEsp" onclick="if(event.target===this)cerrarModal()">
+    <div class="modal-box">
+        <div class="modal-header">
+            <button class="modal-close" onclick="cerrarModal()"><i class="fas fa-times"></i></button>
+            <div class="modal-cuatri-label">Selecciona tu especialidad</div>
+            <h2 id="modalTitulo">4to Cuatrimestre</h2>
+            <p>¿A qué carrera perteneces?</p>
+        </div>
+        <div class="modal-opciones">
+            <a href="#" id="btnIA" class="btn-esp ia">
+                <div class="esp-icon ia">🤖</div>
+                <div class="esp-info">
+                    <div class="esp-titulo ia">Inteligencia Artificial</div>
+                    <div class="esp-sub">TSU en Inteligencia Artificial</div>
+                </div>
+                <i class="fas fa-chevron-right esp-arrow"></i>
+            </a>
+            <a href="#" id="btnRedes" class="btn-esp redes">
+                <div class="esp-icon redes">🌐</div>
+                <div class="esp-info">
+                    <div class="esp-titulo redes">Infraestructura de Redes Digitales</div>
+                    <div class="esp-sub">TSU en Redes Digitales</div>
+                </div>
+                <i class="fas fa-chevron-right esp-arrow"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+const cuatrimestres = {{ cuatrimestres_json | safe }};
+
+function abrirModal(num) {
+    const nombres = {'4to':'4to','5to':'5to','6to':'6to','7mo':'7mo','8vo':'8vo','9no':'9no'};
+    document.getElementById('modalTitulo').textContent = num + ' Cuatrimestre';
+
+    const ia    = cuatrimestres.find(c => c.nombre.startsWith(num) && c.nombre.includes('Inteligencia'));
+    const redes = cuatrimestres.find(c => c.nombre.startsWith(num) && c.nombre.includes('Redes'));
+
+    if (ia)    document.getElementById('btnIA').href    = '/cuatrimestre/' + ia.id;
+    if (redes) document.getElementById('btnRedes').href = '/cuatrimestre/' + redes.id;
+
+    document.getElementById('modalEsp').classList.add('active');
+}
+
+function cerrarModal() {
+    document.getElementById('modalEsp').classList.remove('active');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+</script>    
+{% include 'chat_ia.html' %}
+</body>
+</html>

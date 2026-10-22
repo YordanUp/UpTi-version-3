@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registro | UPTI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo: #800000; --rojo2: #a00000; --rojo-dark: #5a0000;
+            --rojo-glow: rgba(128,0,0,0.10); --borde: #eeddd8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            height: 100vh; display: flex; overflow: hidden;
+        }
+
+        /* ── PANEL IZQUIERDO (igual al original) ── */
+        .panel-izq {
+            width: 40%; background: #f0ece8;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: background 0.3s; position: relative;
+            overflow: hidden;
+        }
+        .panel-izq::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, rgba(128,0,0,0.06) 0%, transparent 70%);
+        }
+        .panel-izq img {
+            max-width: 65%; position: relative; z-index: 1;
+            filter: drop-shadow(2px 6px 18px rgba(0,0,0,0.18));
+            transition: transform 0.4s;
+        }
+        .panel-izq img:hover { transform: scale(1.04); }
+
+        /* ── PANEL DERECHO ── */
+        .panel-der {
+            width: 60%; background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            overflow-y: auto; padding: 32px 24px;
+            border-left: 1px solid var(--borde);
+        }
+
+        /* Card */
+        .card {
+            width: 100%; max-width: 420px;
+            background: #fff; border-radius: 28px;
+            padding: 40px 38px 34px;
+            box-shadow: 0 12px 48px rgba(128,0,0,0.10);
+            position: relative;
+            animation: aparecer 0.45s ease both;
+        }
+        @keyframes aparecer { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Logo UPTI esquina */
+        .logo-top {
+            position: absolute; top: 20px; right: 20px; height: 48px;
+            transition: transform 0.3s;
+        }
+        .logo-top:hover { transform: rotate(10deg) scale(1.05); }
+
+        /* Hero card */
+        .card-hero { margin-bottom: 26px; }
+        .card-eyebrow {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--rojo-glow); color: var(--rojo);
+            border: 1px solid var(--borde); border-radius: 50px;
+            padding: 4px 12px; font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;
+        }
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem; font-weight: 900;
+            color: #1a1a1a; margin-bottom: 4px;
+        }
+        .card-sub { color: #aaa; font-size: 0.84rem; }
+
+        /* Flash */
+        .flash { display: flex; align-items: center; gap: 9px; padding: 11px 14px; border-radius: 12px; font-size: 0.83rem; margin-bottom: 16px; }
+        .flash.danger  { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
+        .flash.success { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+
+        /* Campos */
+        .campo { margin-bottom: 14px; }
+        .campo label {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.74rem; font-weight: 700; color: var(--rojo);
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px;
+        }
+        .input-row {
+            display: flex; align-items: center;
+            background: #f8f8f8; border: 1.5px solid #e8e8e8;
+            border-radius: 14px; height: 50px; padding: 0 16px; gap: 10px;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .input-row:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+        .input-row .fi { color: var(--rojo); font-size: 14px; flex-shrink: 0; width: 15px; text-align: center; }
+        .input-row input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.89rem; color: #333; min-width: 0; font-family: 'DM Sans', sans-serif; height: 100%; }
+        .input-row input::placeholder { color: #c5c5c5; }
+        .input-row .ojo { background: none; border: none; color: #ccc; font-size: 13px; cursor: pointer; padding: 0; flex-shrink: 0; transition: color 0.2s; }
+        .input-row .ojo:hover { color: var(--rojo); }
+
+        /* Validación */
+        .vmsg { font-size: 0.73rem; margin-top: 5px; padding-left: 4px; display: none; align-items: center; gap: 5px; }
+        .vmsg.ok  { color: #27ae60; display: flex; }
+        .vmsg.err { color: #e74c3c; display: flex; }
+
+        /* Barra fortaleza */
+        .barra { margin-top: 6px; display: none; }
+        .barra.show { display: block; }
+        .barra-track { height: 4px; border-radius: 2px; background: #eee; overflow: hidden; margin-bottom: 3px; }
+        .barra-fill { height: 100%; border-radius: 2px; transition: all 0.3s; width: 0; }
+        .barra-txt { font-size: 0.7rem; font-weight: 700; }
+
+        /* Upload foto */
+        .upload-row {
+            display: flex; align-items: center;
+            background: #f8f8f8; border: 1.5px solid #e8e8e8;
+            border-radius: 14px; height: 50px; overflow: hidden;
+            position: relative; cursor: pointer; transition: border-color 0.2s;
+        }
+        .upload-row:hover { border-color: var(--rojo); }
+        .upload-btn-inner {
+            background: var(--rojo); color: #fff; height: 100%;
+            padding: 0 16px; display: flex; align-items: center; gap: 7px;
+            font-size: 0.81rem; font-weight: 600; white-space: nowrap;
+            flex-shrink: 0; border-radius: 13px 0 0 13px; transition: background 0.2s;
+        }
+        .upload-row:hover .upload-btn-inner { background: var(--rojo2); }
+        .upload-nombre { flex: 1; padding: 0 12px; font-size: 0.81rem; color: #bbb; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .upload-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+        /* Preview foto */
+        .foto-wrap { display: none; align-items: center; gap: 10px; margin-top: 8px; }
+        .foto-wrap.visible { display: flex; }
+        .foto-preview { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--rojo); }
+        .foto-nombre { font-size: 0.78rem; color: #666; }
+
+        /* Botón */
+        .btn-crear {
+            width: 100%; height: 50px; border-radius: 14px;
+            background: linear-gradient(135deg, var(--rojo), #c0392b);
+            color: #fff; border: none; font-family: 'DM Sans', sans-serif;
+            font-size: 0.92rem; font-weight: 700; letter-spacing: 0.5px;
+            margin-top: 8px; cursor: pointer;
+            box-shadow: 0 6px 18px rgba(128,0,0,0.28);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 9px;
+        }
+        .btn-crear:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(128,0,0,0.34); }
+        .btn-crear:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .spinner { width: 17px; height: 17px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Pie */
+        .pie { text-align: center; margin-top: 18px; font-size: 0.86rem; color: #aaa; }
+        .pie a { color: var(--rojo); font-weight: 700; text-decoration: none; }
+        .pie a:hover { color: var(--rojo2); text-decoration: underline; }
+
+        @media (max-width: 900px) {
+            body { flex-direction: column; height: auto; overflow: auto; }
+            .panel-izq { width: 100%; height: 200px; }
+            .panel-der { width: 100%; padding: 32px 16px 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Panel izquierdo — escudo UPTI -->
+<div class="panel-izq">
+    <img src="{{ url_for('static', filename='logo_izquierdo.png') }}" alt="Escudo UPTI">
+</div>
+
+<!-- Panel derecho — formulario -->
+<div class="panel-der">
+    <div class="card">
+        <img src="{{ url_for('static', filename='upti_logo.png') }}" class="logo-top" alt="UPTI">
+
+        <div class="card-hero">
+            <div class="card-eyebrow"><i class="fas fa-university"></i> UPTI Académico</div>
+            <div class="card-title">Crear cuenta</div>
+            <div class="card-sub">Completa los datos para registrarte</div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">
+                    <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data" id="regForm" novalidate>
+
+            <div class="campo">
+                <label><i class="fas fa-at fi"></i> Correo electrónico</label>
+                <div class="input-row">
+                    <i class="fas fa-at fi"></i>
+                    <input type="email" name="correo" id="correo" placeholder="tu@correo.com" required autocomplete="email">
+                </div>
+                <div class="vmsg" id="msg-correo"></div>
+            </div>
+
+            <div class="campo">
+                <label><i class="fas fa-user fi"></i> Nombre de usuario</label>
+                <div class="input-row">
+                    <i class="fas fa-user fi"></i>
+                    <input type="text" name="nombre_usuario" id="usuario" placeholder="Ej: gerardo_2024" required minlength="3" maxlength="50" autocomplete="username">
+                </div>
+                <div class="vmsg" id="msg-usuario"></div>
+            </div>
+
+            <div class="campo">
+                <label><i class="fas fa-lock fi"></i> Contraseña</label>
+                <div class="input-row">
+                    <i class="fas fa-lock fi"></i>
+                    <input type="password" name="contraseña" id="pass" placeholder="Mínimo 8 caracteres" required minlength="8" autocomplete="new-password">
+                    <button type="button" class="ojo" onclick="verPass('pass',this)"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="barra" id="barra">
+                    <div class="barra-track"><div class="barra-fill" id="bfill"></div></div>
+                    <span class="barra-txt" id="btxt"></span>
+                </div>
+                <div class="vmsg" id="msg-pass"></div>
+            </div>
+
+            <div class="campo">
+                <label><i class="fas fa-lock fi"></i> Confirmar contraseña</label>
+                <div class="input-row">
+                    <i class="fas fa-lock fi"></i>
+                    <input type="password" name="confirmar_contraseña" id="pass2" placeholder="Repite tu contraseña" required autocomplete="new-password">
+                    <button type="button" class="ojo" onclick="verPass('pass2',this)"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="vmsg" id="msg-pass2"></div>
+            </div>
+
+            <div class="campo">
+                <label><i class="fas fa-camera fi"></i> Foto de perfil <span style="font-weight:400;color:#bbb;text-transform:none;letter-spacing:0;font-size:0.72rem;">(opcional)</span></label>
+                <div class="upload-row">
+                    <div class="upload-btn-inner"><i class="fas fa-camera"></i> Elegir foto</div>
+                    <span class="upload-nombre" id="upload-nombre">Ninguna foto seleccionada</span>
+                    <input type="file" name="imagen_perfil" class="upload-input" accept="image/*" id="fileInput">
+                </div>
+                <div class="foto-wrap" id="fotoWrap">
+                    <img id="fotoPreview" class="foto-preview" alt="Vista previa">
+                    <span class="foto-nombre" id="fotoNombre"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-crear" id="btnCrear">
+                <span id="btnTxt"><i class="fas fa-user-plus"></i> Crear cuenta</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+
+        <div class="pie">¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí</a></div>
+    </div>
+</div>
+
+<script>
+    function verPass(id, btn) {
+        const inp = document.getElementById(id);
+        const ico = btn.querySelector('i');
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        ico.classList.toggle('fa-eye'); ico.classList.toggle('fa-eye-slash');
+    }
+
+    document.getElementById('correo').addEventListener('blur', function() {
+        const msg = document.getElementById('msg-correo');
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!this.value) { msg.innerHTML='<i class="fas fa-exclamation-circle"></i> El correo es obligatorio.'; msg.className='vmsg err'; }
+        else if (!re.test(this.value)) { msg.innerHTML='<i class="fas fa-exclamation-circle"></i> Correo inválido.'; msg.className='vmsg err'; }
+        else { msg.innerHTML='<i class="fas fa-check-circle"></i> Correo válido.'; msg.className='vmsg ok'; }
+    });
+
+    document.getElementById('usuario').addEventListener('blur', function() {
+        const msg = document.getElementById('msg-usuario');
+        if (!this.value) { msg.innerHTML='<i class="fas fa-exclamation-circle"></i> Campo obligatorio.'; msg.className='vmsg err'; }
+        else if (this.value.length < 3) { msg.innerHTML='<i class="fas fa-exclamation-circle"></i> Mínimo 3 caracteres.'; msg.className='vmsg err'; }
+        else { msg.innerHTML='<i class="fas fa-check-circle"></i> Nombre válido.'; msg.className='vmsg ok'; }
+    });
+
+    document.getElementById('pass').addEventListener('input', function() {
+        const v = this.value;
+        const barra = document.getElementById('barra'), fill = document.getElementById('bfill');
+        const txt = document.getElementById('btxt'), msg = document.getElementById('msg-pass');
+        if (!v) { barra.classList.remove('show'); msg.className='vmsg'; return; }
+        barra.classList.add('show');
+        let s = 0;
+        if (v.length >= 8) s++; if (/[A-Z]/.test(v)) s++; if (/[0-9]/.test(v)) s++; if (/[^A-Za-z0-9]/.test(v)) s++;
+        const n = [{w:'25%',c:'#e74c3c',t:'Muy débil'},{w:'50%',c:'#e67e22',t:'Débil'},{w:'75%',c:'#f1c40f',t:'Buena'},{w:'100%',c:'#27ae60',t:'Fuerte'}][s-1] || {w:'25%',c:'#e74c3c',t:'Muy débil'};
+        fill.style.width=n.w; fill.style.background=n.c; txt.textContent=n.t; txt.style.color=n.c;
+        if (v.length < 8) { msg.innerHTML='<i class="fas fa-exclamation-circle"></i> Mínimo 8 caracteres.'; msg.className='vmsg err'; }
+        else { msg.innerHTML='<i class="fas fa-check-circle"></i> Contraseña aceptada.'; msg.className='vmsg ok'; }
+        if (document.getElementById('pass2').value) chkConfirm();
+    });
+
+    function chkConfirm() {
+        const p1=document.getElementById('pass').value, p2=document.getElementById('pass2').value;
+        const msg=document.getElementById('msg-pass2');
+        if (!p2) { msg.innerHTML='<i class="fas fa-exclamation-circle"></i> Confirma tu contraseña.'; msg.className='vmsg err'; }
+        else if (p1 !== p2) { msg.innerHTML='<i class="fas fa-exclamation-circle"></i> Las contraseñas no coinciden.'; msg.className='vmsg err'; }
+        else { msg.innerHTML='<i class="fas fa-check-circle"></i> Coinciden.'; msg.className='vmsg ok'; }
+    }
+    document.getElementById('pass2').addEventListener('input', chkConfirm);
+    document.getElementById('pass2').addEventListener('blur', chkConfirm);
+
+    document.getElementById('fileInput').addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            document.getElementById('upload-nombre').textContent = file.name;
+            document.getElementById('fotoNombre').textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = e => { document.getElementById('fotoPreview').src = e.target.result; document.getElementById('fotoWrap').classList.add('visible'); };
+            reader.readAsDataURL(file);
+        } else {
+            document.getElementById('upload-nombre').textContent = 'Ninguna foto seleccionada';
+            document.getElementById('fotoWrap').classList.remove('visible');
+        }
+    });
+
+    document.getElementById('regForm').addEventListener('submit', function(e) {
+        const re=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const c=document.getElementById('correo').value, u=document.getElementById('usuario').value;
+        const p=document.getElementById('pass').value, p2=document.getElementById('pass2').value;
+        if (!re.test(c) || u.length < 3 || p.length < 8 || p !== p2) {
+            e.preventDefault();
+            document.getElementById('correo').dispatchEvent(new Event('blur'));
+            document.getElementById('usuario').dispatchEvent(new Event('blur'));
+            document.getElementById('pass').dispatchEvent(new Event('input'));
+            chkConfirm(); return;
+        }
+        document.getElementById('btnTxt').style.display='none';
+        document.getElementById('spinner').style.display='block';
+        document.getElementById('btnCrear').disabled=true;
+    });
+</script>
+</body>
+</html>

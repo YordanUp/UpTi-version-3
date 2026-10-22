@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Editar tema | {{ tema.titulo }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --rojo: #800000; --rojo2: #a00000; --rojo-dark: #5a0000; --rojo-glow: rgba(128,0,0,0.09); --bg: #faf7f5; --borde: #eeddd8; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: #1a1a1a; background-image: radial-gradient(ellipse at 10% 10%, rgba(128,0,0,0.04) 0%, transparent 50%), radial-gradient(ellipse at 90% 90%, rgba(128,0,0,0.03) 0%, transparent 50%); }
+        .navbar { background: #fff; border-bottom: 1px solid var(--borde); padding: 0 40px; height: 68px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(128,0,0,0.06); }
+        .navbar-left { display: flex; align-items: center; gap: 16px; }
+        .navbar-logo { height: 44px; transition: transform 0.3s; }
+        .navbar-logo:hover { transform: scale(1.05); }
+        .btn-volver { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 16px; border-radius: 50px; font-size: 0.83rem; font-weight: 600; text-decoration: none; background: var(--rojo-glow); color: var(--rojo); border: 1.5px solid var(--borde); transition: all 0.2s; }
+        .btn-volver:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+        .navbar-search { display: flex; align-items: center; background: #f8f8f8; border: 1.5px solid #e0e0e0; border-radius: 50px; height: 38px; padding: 0 16px; gap: 8px; transition: all 0.2s; width: 240px; }
+        .navbar-search:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); width: 280px; }
+        .navbar-search i { color: var(--rojo); font-size: 13px; flex-shrink: 0; }
+        .navbar-search input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.86rem; color: #333; font-family: 'DM Sans', sans-serif; }
+        .navbar-search input::placeholder { color: #bbb; }
+        .navbar-search button { border: none; background: none; cursor: pointer; color: var(--rojo); font-size: 13px; padding: 0; display: flex; align-items: center; }
+        .navbar-right { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--rojo); box-shadow: 0 0 0 2px var(--rojo-glow); transition: transform 0.2s; }
+        .user-avatar:hover { transform: scale(1.08); }
+        .hero { background: linear-gradient(135deg, var(--rojo-dark), var(--rojo) 60%, #c0392b); padding: 42px 40px 60px; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 1px, transparent 0, transparent 50%); background-size: 20px 20px; }
+        .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 48px; background: var(--bg); clip-path: ellipse(55% 100% at 50% 100%); }
+        .hero-inner { max-width: 760px; margin: 0 auto; position: relative; }
+        .hero-autor { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .hero-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2.5px solid rgba(255,255,255,0.7); }
+        .hero-autor-nombre { font-weight: 700; color: #fff; font-size: 0.93rem; }
+        .hero-autor-info { color: rgba(255,255,255,0.7); font-size: 0.82rem; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 900; color: #fff; text-shadow: 0 2px 16px rgba(0,0,0,0.2); line-height: 1.3; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .hero-sub { color: rgba(255,255,255,0.65); font-size: 0.86rem; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 50px; padding: 4px 14px; font-size: 0.76rem; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 10px; }
+        .page-body { max-width: 760px; margin: 0 auto; padding: 36px 20px 60px; }
+        .form-card { background: #fff; border-radius: 22px; border: 1px solid var(--borde); box-shadow: 0 4px 20px rgba(128,0,0,0.07); overflow: hidden; }
+        .form-card-header { padding: 18px 28px; border-bottom: 1px solid var(--borde); display: flex; align-items: center; gap: 10px; font-size: 0.78rem; font-weight: 700; color: var(--rojo); text-transform: uppercase; letter-spacing: 1px; }
+        .form-card-body { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+        .campo label { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 700; color: var(--rojo); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .input-row { display: flex; align-items: center; background: #f8f8f8; border: 1.5px solid #e8e8e8; border-radius: 14px; height: 50px; padding: 0 18px; gap: 10px; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+        .input-row:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+        .input-row .fi { color: var(--rojo); font-size: 14px; flex-shrink: 0; width: 16px; text-align: center; }
+        .input-row input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.9rem; color: #333; min-width: 0; font-family: 'DM Sans', sans-serif; height: 100%; }
+        .input-row input::placeholder { color: #bbb; }
+        .char-count { text-align: right; font-size: 0.72rem; color: #bbb; margin-top: 4px; }
+        .char-count.warn { color: #e67e22; }
+        .char-count.limit { color: #e74c3c; }
+        .textarea-wrap { background: #f8f8f8; border: 1.5px solid #e8e8e8; border-radius: 16px; padding: 14px 18px; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+        .textarea-wrap:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+        .textarea-wrap textarea { width: 100%; border: none; background: transparent; outline: none; resize: vertical; min-height: 200px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: #333; line-height: 1.7; }
+        .textarea-wrap textarea::placeholder { color: #bbb; }
+        .hint { font-size: 0.74rem; color: #bbb; margin-top: 5px; padding-left: 4px; display: flex; align-items: center; gap: 5px; }
+
+        /* ── ETIQUETAS ── */
+        .etiquetas-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        .etiqueta-btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 50px; border: 1.5px solid #e0e0e0; background: #f8f8f8; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: #777; transition: all 0.18s; }
+        .etiqueta-btn:hover { border-color: var(--rojo); color: var(--rojo); background: var(--rojo-glow); }
+        .etiqueta-btn.activa { background: var(--rojo-glow); color: var(--rojo); border-color: var(--rojo); }
+        .etiqueta-btn.activa i { opacity: 1; }
+        .etiqueta-btn i { font-size: 10px; opacity: 0.5; transition: opacity 0.2s; }
+        .etiquetas-hint { font-size: 0.74rem; color: #bbb; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+
+        .zona-peligro { background: #fff5f5; border: 1.5px solid #f5b7b1; border-radius: 16px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .zona-peligro-info h4 { font-size: 0.84rem; font-weight: 700; color: #c0392b; margin-bottom: 3px; }
+        .zona-peligro-info p { font-size: 0.78rem; color: #e74c3c; opacity: 0.8; }
+        .btn-eliminar { height: 38px; padding: 0 18px; border-radius: 50px; background: #c0392b; color: #fff; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: all 0.2s; white-space: nowrap; }
+        .btn-eliminar:hover { background: #a93226; transform: translateY(-1px); }
+        .btns-row { display: flex; gap: 12px; }
+        .btn-guardar { flex: 1; height: 52px; border-radius: 14px; background: linear-gradient(135deg, var(--rojo), #c0392b); color: #fff; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 6px 18px rgba(128,0,0,0.28); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-guardar:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(128,0,0,0.32); }
+        .btn-guardar:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .btn-cancelar { flex: 1; height: 52px; border-radius: 14px; background: #f0f0f0; color: #555; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s, color 0.2s; }
+        .btn-cancelar:hover { background: #ddd; color: #333; }
+        .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 700px) { .navbar { padding: 0 16px; } .navbar-search { display: none; } .hero { padding: 28px 20px 52px; } .form-card-body { padding: 20px; } .btns-row { flex-direction: column; } .zona-peligro { flex-direction: column; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="{{ url_for('inicio') }}">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="UPTI" class="navbar-logo">
+        </a>
+        <form action="{{ url_for('buscar') }}" method="GET" class="navbar-search">
+            <i class="fas fa-search"></i>
+            <input type="text" name="q" placeholder="Buscar temas, archivos..." autocomplete="off">
+            <button type="submit"><i class="fas fa-arrow-right"></i></button>
+        </form>
+        <a href="{{ url_for('ver_tema', tema_id=tema.id) }}" class="btn-volver">
+            <i class="fas fa-arrow-left"></i> Volver al tema
+        </a>
+    </div>
+    <div class="navbar-right">
+        <a href="{{ url_for('ver_perfil', usuario_id=usuario.id) }}">
+            <img src="{{ url_for('static', filename='perfiles/' + usuario.imagen_perfil) }}" alt="{{ usuario.nombre_usuario }}" class="user-avatar">
+        </a>
+    </div>
+</nav>
+
+<div class="hero">
+    <div class="hero-inner">
+        <div class="hero-autor">
+            <img src="{{ url_for('static', filename='perfiles/' + usuario.imagen_perfil) }}" alt="{{ usuario.nombre_usuario }}" class="hero-avatar">
+            <div>
+                <div class="hero-autor-nombre">{{ usuario.nombre_usuario }}</div>
+                <div class="hero-autor-info">Editando tema</div>
+            </div>
+        </div>
+        <h1>{{ tema.titulo }}</h1>
+        <div class="hero-sub">{{ tema.materia.nombre }}</div>
+        <div class="hero-badge"><i class="fas fa-edit"></i> Modo edición</div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="form-card">
+        <div class="form-card-header">
+            <i class="fas fa-pen"></i> Editar información del tema
+        </div>
+        <div class="form-card-body">
+            <form method="POST" id="editForm">
+
+                <div class="campo">
+                    <label><i class="fas fa-heading fi"></i> Título</label>
+                    <div class="input-row">
+                        <i class="fas fa-heading fi"></i>
+                        <input type="text" name="titulo" id="titulo" value="{{ tema.titulo }}" required placeholder="Título del tema..." maxlength="150">
+                    </div>
+                    <div class="char-count"><span id="tituloCount">{{ tema.titulo|length }}</span>/150</div>
+                </div>
+
+                <div class="campo">
+                    <label><i class="fas fa-align-left fi"></i> Contenido</label>
+                    <div class="textarea-wrap">
+                        <textarea name="contenido" id="contenido" required placeholder="Escribe el contenido del tema...">{{ tema.contenido }}</textarea>
+                    </div>
+                    <div class="hint">
+                        <i class="fab fa-youtube" style="color:#ff0000;"></i>
+                        Los enlaces de YouTube se mostrarán embebidos automáticamente.
+                    </div>
+                </div>
+
+                <!-- ✨ ETIQUETAS -->
+                <div class="campo">
+                    <label><i class="fas fa-tags fi"></i> Etiquetas</label>
+                    <div class="etiquetas-grid">
+                        <button type="button" class="etiqueta-btn" data-etiqueta="examen" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 📝 Examen
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="tarea" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 📋 Tarea
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="concepto" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 💡 Concepto
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="resumen" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 📄 Resumen
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="ejercicio" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 🔢 Ejercicio
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="proyecto" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> 🚀 Proyecto
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="apunte" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> ✏️ Apunte
+                        </button>
+                        <button type="button" class="etiqueta-btn" data-etiqueta="duda" onclick="toggleEtiqueta(this)">
+                            <i class="fas fa-check"></i> ❓ Duda
+                        </button>
+                    </div>
+                    <input type="hidden" name="etiquetas" id="etiquetasInput" value="{{ tema.etiquetas or '' }}">
+                    <div class="etiquetas-hint"><i class="fas fa-info-circle"></i> Selecciona una o más etiquetas para organizar el tema</div>
+                </div>
+
+                <div class="btns-row">
+                    <button type="submit" class="btn-guardar" id="btnGuardar">
+                        <span id="btnTxt"><i class="fas fa-save"></i> Guardar cambios</span>
+                        <div class="spinner" id="spinner"></div>
+                    </button>
+                    <a href="{{ url_for('ver_tema', tema_id=tema.id) }}" class="btn-cancelar">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+
+            </form>
+
+            <div class="zona-peligro">
+                <div class="zona-peligro-info">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Eliminar tema</h4>
+                    <p>Esta acción es permanente y eliminará todos los archivos y comentarios asociados.</p>
+                </div>
+                <form action="{{ url_for('eliminar_tema', tema_id=tema.id) }}" method="POST"
+                      onsubmit="return confirm('¿Seguro que deseas eliminar este tema? Esta acción no se puede deshacer.')">
+                    <button type="submit" class="btn-eliminar">
+                        <i class="fas fa-trash"></i> Eliminar tema
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // ── Etiquetas — cargar las existentes al iniciar ──
+    const etiquetasSeleccionadas = new Set(
+        '{{ tema.etiquetas or "" }}'.split(',').filter(e => e.trim())
+    );
+
+    document.querySelectorAll('.etiqueta-btn').forEach(btn => {
+        if (etiquetasSeleccionadas.has(btn.dataset.etiqueta)) {
+            btn.classList.add('activa');
+        }
+    });
+
+    function toggleEtiqueta(btn) {
+        const et = btn.dataset.etiqueta;
+        if (etiquetasSeleccionadas.has(et)) {
+            etiquetasSeleccionadas.delete(et);
+            btn.classList.remove('activa');
+        } else {
+            etiquetasSeleccionadas.add(et);
+            btn.classList.add('activa');
+        }
+        document.getElementById('etiquetasInput').value = Array.from(etiquetasSeleccionadas).join(',');
+    }
+
+    // ── Título counter ──
+    const tituloInput = document.getElementById('titulo');
+    const tituloCount = document.getElementById('tituloCount');
+    const charCount = document.querySelector('.char-count');
+    tituloInput.addEventListener('input', () => {
+        const len = tituloInput.value.length;
+        tituloCount.textContent = len;
+        charCount.className = 'char-count' + (len > 140 ? ' warn' : '') + (len >= 150 ? ' limit' : '');
+    });
+
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+        if (!tituloInput.value.trim()) { alert('El título no puede estar vacío.'); e.preventDefault(); return; }
+        if (!document.getElementById('contenido').value.trim()) { alert('El contenido no puede estar vacío.'); e.preventDefault(); return; }
+        document.getElementById('btnTxt').style.display = 'none';
+        document.getElementById('spinner').style.display = 'block';
+        document.getElementById('btnGuardar').disabled = true;
+    });
+</script>
+{% include 'chat_ia.html' %}
+</body>
+</html>

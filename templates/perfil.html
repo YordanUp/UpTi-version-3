@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Perfil de {{ usuario.nombre_usuario }} | UPTI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo: #800000; --rojo2: #a00000; --rojo-dark: #5a0000;
+            --rojo-glow: rgba(128,0,0,0.09); --bg: #f7f4f2; --borde: #eeddd8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: #1a1a1a; }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            background: #fff; border-bottom: 1px solid var(--borde);
+            padding: 0 40px; height: 68px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 16px rgba(128,0,0,0.06);
+        }
+        .navbar-left { display: flex; align-items: center; gap: 14px; flex: 1; }
+        .navbar-logo { height: 44px; transition: transform 0.3s; }
+        .navbar-logo:hover { transform: scale(1.05); }
+        .navbar-search {
+            display: flex; align-items: center;
+            background: #f8f8f8; border: 1.5px solid #e0e0e0;
+            border-radius: 50px; height: 38px; padding: 0 16px; gap: 8px;
+            transition: all 0.2s; width: 240px;
+        }
+        .navbar-search:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); width: 280px; }
+        .navbar-search i.si { color: var(--rojo); font-size: 13px; }
+        .navbar-search input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.86rem; font-family: 'DM Sans', sans-serif; }
+        .navbar-search input::placeholder { color: #bbb; }
+        .navbar-search button { border: none; background: none; cursor: pointer; color: var(--rojo); font-size: 13px; padding: 0; display: flex; align-items: center; }
+        .btn-volver {
+            display: inline-flex; align-items: center; gap: 7px;
+            height: 36px; padding: 0 14px; border-radius: 50px;
+            font-size: 0.82rem; font-weight: 600; text-decoration: none;
+            background: var(--rojo-glow); color: var(--rojo);
+            border: 1.5px solid var(--borde); transition: all 0.2s; flex-shrink: 0;
+        }
+        .btn-volver:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+
+        /* ── PAGE ── */
+        .page { max-width: 620px; margin: 0 auto; padding: 40px 20px 60px; }
+
+        /* ── COVER + AVATAR ── */
+        .perfil-cover {
+            border-radius: 24px; overflow: hidden;
+            box-shadow: 0 8px 32px rgba(128,0,0,0.12);
+            position: relative; animation: fadeUp 0.4s ease both;
+        }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .cover-bg {
+            height: 140px;
+            background: linear-gradient(135deg, var(--rojo-dark), var(--rojo) 55%, #c0392b);
+            position: relative; overflow: hidden;
+        }
+        .cover-bg::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.025) 0, rgba(255,255,255,0.025) 1px, transparent 0, transparent 50%);
+            background-size: 20px 20px;
+        }
+        .cover-orb {
+            position: absolute; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+        }
+        .cover-orb1 { width: 200px; height: 200px; top: -80px; right: 10%; }
+        .cover-orb2 { width: 120px; height: 120px; bottom: -40px; left: 5%; }
+
+        .perfil-body { background: #fff; padding: 0 28px 28px; }
+
+        /* Avatar flotante */
+        .avatar-float {
+            display: flex; align-items: flex-end; justify-content: space-between;
+            padding-top: 0; margin-top: -52px; margin-bottom: 16px;
+        }
+        .avatar-wrap { position: relative; }
+        .avatar-img {
+            width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
+            border: 4px solid #fff;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+        }
+        .avatar-online {
+            position: absolute; bottom: 6px; right: 6px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #27ae60; border: 3px solid #fff;
+        }
+        .btn-editar-top {
+            display: inline-flex; align-items: center; gap: 7px;
+            height: 36px; padding: 0 16px; border-radius: 50px;
+            font-size: 0.82rem; font-weight: 700; text-decoration: none;
+            background: var(--rojo); color: #fff;
+            border: none; transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(128,0,0,0.25);
+            margin-bottom: 4px;
+        }
+        .btn-editar-top:hover { background: var(--rojo2); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(128,0,0,0.3); color: #fff; }
+
+        /* Nombre y correo */
+        .perfil-nombre {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem; font-weight: 900; color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        .perfil-correo {
+            font-size: 0.84rem; color: #aaa;
+            display: flex; align-items: center; gap: 6px; margin-bottom: 16px;
+        }
+
+        /* Stats row */
+        .stats-row {
+            display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px;
+            padding-bottom: 22px; border-bottom: 1px solid #f0ebe8;
+        }
+        .stat-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--rojo-glow); color: var(--rojo);
+            border-radius: 50px; padding: 5px 14px;
+            font-size: 0.78rem; font-weight: 700;
+            border: 1px solid var(--borde);
+        }
+        .stat-pill i { font-size: 11px; opacity: 0.7; }
+        .stat-pill.vacio { background: #f5f5f5; color: #bbb; border-color: #eee; }
+
+        /* Info items */
+        .info-seccion { display: flex; flex-direction: column; gap: 0; }
+        .info-item {
+            display: flex; align-items: flex-start; gap: 14px;
+            padding: 16px 0; border-bottom: 1px solid #f5f0ee;
+        }
+        .info-item:last-child { border-bottom: none; }
+        .info-icono {
+            width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+            background: var(--rojo-glow); color: var(--rojo);
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
+        }
+        .info-content { flex: 1; }
+        .info-label {
+            font-size: 0.68rem; font-weight: 700; color: var(--rojo);
+            text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;
+        }
+        .info-value { font-size: 0.92rem; color: #1a1a1a; font-weight: 500; line-height: 1.45; }
+        .info-value.vacio { color: #ccc; font-style: italic; font-weight: 400; }
+
+        /* Footer */
+        .page-footer { text-align: center; padding: 24px; font-size: 0.78rem; color: #bbb; border-top: 1px solid var(--borde); }
+
+        @media (max-width: 500px) {
+            .navbar { padding: 0 16px; }
+            .page { padding: 20px 12px 40px; }
+            .perfil-body { padding: 0 18px 22px; }
+            .navbar-search { width: 150px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="{{ url_for('inicio') }}">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="UPTI" class="navbar-logo">
+        </a>
+        <form action="{{ url_for('buscar') }}" method="GET" class="navbar-search">
+            <i class="fas fa-search si"></i>
+            <input type="text" name="q" placeholder="Buscar temas, archivos..." autocomplete="off">
+            <button type="submit"><i class="fas fa-arrow-right"></i></button>
+        </form>
+        <a href="{{ url_for('inicio') }}" class="btn-volver">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+</nav>
+
+<div class="page">
+    <div class="perfil-cover">
+
+        <!-- Cover -->
+        <div class="cover-bg">
+            <div class="cover-orb cover-orb1"></div>
+            <div class="cover-orb cover-orb2"></div>
+        </div>
+
+        <!-- Body -->
+        <div class="perfil-body">
+
+            <!-- Avatar + botón editar -->
+            <div class="avatar-float">
+                <div class="avatar-wrap">
+                    <img src="{{ url_for('static', filename='perfiles/' + usuario.imagen_perfil) }}"
+                         alt="Foto de perfil" class="avatar-img">
+                    <div class="avatar-online"></div>
+                </div>
+                <a href="{{ url_for('editar_perfil') }}" class="btn-editar-top">
+                    <i class="fas fa-pen"></i> Editar perfil
+                </a>
+            </div>
+
+            <!-- Nombre -->
+            <div class="perfil-nombre">{{ usuario.nombre_usuario }}</div>
+            <div class="perfil-correo">
+                <i class="fas fa-envelope" style="font-size:11px;"></i>
+                {{ usuario.correo }}
+            </div>
+
+            <!-- Stats pills -->
+            <div class="stats-row">
+                {% if usuario.cuatrimestre %}
+                <span class="stat-pill"><i class="fas fa-layer-group"></i> {{ usuario.cuatrimestre.nombre.split('—')[0].strip() }}</span>
+                {% else %}
+                <span class="stat-pill vacio"><i class="fas fa-layer-group"></i> Sin cuatrimestre</span>
+                {% endif %}
+
+                {% if usuario.grupo and usuario.grupo.strip() %}
+                <span class="stat-pill"><i class="fas fa-users"></i> Grupo {{ usuario.grupo }}</span>
+                {% else %}
+                <span class="stat-pill vacio"><i class="fas fa-users"></i> Sin grupo</span>
+                {% endif %}
+            </div>
+
+            <!-- Info -->
+            <div class="info-seccion">
+
+                {% if usuario.cuatrimestre %}
+                <div class="info-item">
+                    <div class="info-icono"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="info-content">
+                        <div class="info-label">Cuatrimestre</div>
+                        <div class="info-value">{{ usuario.cuatrimestre.nombre }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="info-item">
+                    <div class="info-icono"><i class="fas fa-info-circle"></i></div>
+                    <div class="info-content">
+                        <div class="info-label">Descripción</div>
+                        <div class="info-value {% if not usuario.descripcion or not usuario.descripcion.strip() %}vacio{% endif %}">
+                            {{ usuario.descripcion if usuario.descripcion and usuario.descripcion.strip() else 'Sin descripción aún' }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icono"><i class="fas fa-envelope"></i></div>
+                    <div class="info-content">
+                        <div class="info-label">Correo</div>
+                        <div class="info-value">{{ usuario.correo }}</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-footer">UPTI &copy; 2025 — Plataforma Académica</div>
+
+{% include 'chat_ia.html' %}
+</body>
+</html>

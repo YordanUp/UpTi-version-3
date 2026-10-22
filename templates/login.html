@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Iniciar Sesión | UPTI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo: #800000; --rojo2: #a00000; --rojo-dark: #5a0000;
+            --rojo-glow: rgba(128,0,0,0.12); --borde: #eeddd8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 480px;
+            background: #faf7f5;
+        }
+
+        /* ── PANEL IZQUIERDO ── */
+        .panel-left {
+            background: linear-gradient(155deg, var(--rojo-dark) 0%, var(--rojo) 55%, #c0392b 100%);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            padding: 48px 56px;
+        }
+        .panel-left::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image:
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 1px, transparent 0, transparent 50%);
+            background-size: 24px 24px;
+        }
+        /* Círculos decorativos */
+        .deco-circle {
+            position: absolute; border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .deco-circle-1 { width: 420px; height: 420px; bottom: -100px; right: -120px; }
+        .deco-circle-2 { width: 260px; height: 260px; bottom: 40px; right: 30px; }
+        .deco-circle-3 { width: 140px; height: 140px; top: 80px; left: -40px; }
+
+        .panel-logo { position: relative; z-index: 1; }
+        .panel-logo img { height: 52px; filter: brightness(0) invert(1); opacity: 0.95; }
+
+        .panel-content { position: relative; z-index: 1; }
+        .panel-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-weight: 900; color: #fff;
+            line-height: 1.15; margin-bottom: 20px;
+            text-shadow: 0 4px 24px rgba(0,0,0,0.2);
+        }
+        .panel-content h1 em { font-style: italic; opacity: 0.85; }
+        .panel-content p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.95rem; line-height: 1.7;
+            max-width: 340px;
+        }
+
+        .panel-stats {
+            position: relative; z-index: 1;
+            display: flex; gap: 32px;
+        }
+        .stat { }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem; font-weight: 900;
+            color: #fff; line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.76rem; color: rgba(255,255,255,0.6);
+            text-transform: uppercase; letter-spacing: 1px; margin-top: 3px;
+        }
+
+        /* ── PANEL DERECHO ── */
+        .panel-right {
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            padding: 48px 52px;
+            border-left: 1px solid var(--borde);
+            position: relative;
+        }
+
+        .form-wrap {
+            width: 100%;
+            animation: slideUp 0.5s ease both;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-eyebrow {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: var(--rojo-glow); color: var(--rojo);
+            border: 1px solid var(--borde); border-radius: 50px;
+            padding: 5px 14px; font-size: 0.73rem; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;
+        }
+
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem; font-weight: 900;
+            color: #1a1a1a; margin-bottom: 6px;
+        }
+        .form-sub { color: #999; font-size: 0.88rem; margin-bottom: 32px; }
+
+        /* Flash */
+        .flash { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; font-size: 0.84rem; margin-bottom: 20px; }
+        .flash.danger  { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
+        .flash.success { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+        .flash.warning { background: #fef9e7; color: #b7770d; border: 1px solid #f9e79f; }
+
+        /* Campos */
+        .campo { margin-bottom: 16px; }
+        .campo label {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.76rem; font-weight: 700; color: var(--rojo);
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+        }
+        .input-row {
+            display: flex; align-items: center;
+            background: #f8f8f8; border: 1.5px solid #e8e8e8;
+            border-radius: 14px; height: 52px; padding: 0 18px; gap: 12px;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .input-row:focus-within { border-color: var(--rojo); background: #fff; box-shadow: 0 0 0 3px rgba(128,0,0,0.08); }
+        .input-row .fi { color: var(--rojo); font-size: 15px; flex-shrink: 0; width: 18px; text-align: center; }
+        .input-row input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.92rem; color: #333; min-width: 0; font-family: 'DM Sans', sans-serif; height: 100%; }
+        .input-row input::placeholder { color: #c0c0c0; }
+        .input-row .ojo { background: none; border: none; color: #ccc; font-size: 14px; cursor: pointer; padding: 0; flex-shrink: 0; transition: color 0.2s; }
+        .input-row .ojo:hover { color: var(--rojo); }
+
+        /* Botón */
+        .btn-entrar {
+            width: 100%; height: 52px; border-radius: 14px;
+            background: linear-gradient(135deg, var(--rojo), #c0392b);
+            color: #fff; border: none; font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px;
+            margin-top: 8px; cursor: pointer;
+            box-shadow: 0 6px 18px rgba(128,0,0,0.32);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-entrar:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(128,0,0,0.38); }
+        .btn-entrar:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Divisor */
+        .divisor { display: flex; align-items: center; gap: 12px; margin: 24px 0 20px; }
+        .divisor hr { flex: 1; border: none; border-top: 1px solid #efefef; }
+        .divisor span { color: #ccc; font-size: 0.76rem; white-space: nowrap; }
+
+        /* Links */
+        .links { display: flex; flex-direction: column; gap: 10px; }
+        .link-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            height: 46px; border-radius: 14px; border: 1.5px solid #e8e8e8;
+            background: #f8f8f8; color: #555; font-size: 0.86rem; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .link-btn:hover { border-color: var(--rojo); background: var(--rojo-glow); color: var(--rojo); }
+        .link-btn.primary { background: var(--rojo-glow); border-color: var(--borde); color: var(--rojo); }
+        .link-btn.primary:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            body { grid-template-columns: 1fr; }
+            .panel-left { display: none; }
+            .panel-right { padding: 48px 28px; }
+        }
+        @media (max-width: 480px) {
+            .panel-right { padding: 36px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Panel izquierdo decorativo -->
+<div class="panel-left">
+    <div class="deco-circle deco-circle-1"></div>
+    <div class="deco-circle deco-circle-2"></div>
+    <div class="deco-circle deco-circle-3"></div>
+
+    <div class="panel-logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="UPTI">
+    </div>
+
+    <div class="panel-content">
+        <h1>Bienvenido a<br><em>tu plataforma</em><br>académica</h1>
+        <p>Accede a temas, archivos y recursos compartidos por tus compañeros de clase en UPTI.</p>
+    </div>
+
+    <div class="panel-stats">
+        <div class="stat">
+            <div class="stat-num">93</div>
+            <div class="stat-label">Materias</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">10</div>
+            <div class="stat-label">Cuatrimestres</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">2</div>
+            <div class="stat-label">Especialidades</div>
+        </div>
+    </div>
+</div>
+
+<!-- Panel derecho — formulario -->
+<div class="panel-right">
+    <div class="form-wrap">
+        <div class="form-eyebrow"><i class="fas fa-university"></i> UPTI Académico</div>
+        <div class="form-title">Iniciar sesión</div>
+        <div class="form-sub">Ingresa tus credenciales para continuar</div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">
+                    <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'warning' %}fa-exclamation-triangle{% else %}fa-exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" id="loginForm">
+
+            <div class="campo">
+                <label><i class="fas fa-user fi"></i> Usuario o correo</label>
+                <div class="input-row">
+                    <i class="fas fa-at fi"></i>
+                    <input type="text" name="usuario" placeholder="Tu usuario o correo institucional" required autocomplete="username">
+                </div>
+            </div>
+
+            <div class="campo">
+                <label><i class="fas fa-lock fi"></i> Contraseña</label>
+                <div class="input-row">
+                    <i class="fas fa-lock fi"></i>
+                    <input type="password" name="contraseña" id="passLogin" placeholder="Tu contraseña" required autocomplete="current-password">
+                    <button type="button" class="ojo" onclick="verPass()">
+                        <i class="fas fa-eye" id="ojoIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-entrar" id="btnEntrar">
+                <span id="btnTxt"><i class="fas fa-sign-in-alt"></i> &nbsp;Entrar</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+
+        <div class="divisor"><hr><span>¿Necesitas ayuda?</span><hr></div>
+
+        <div class="links">
+            <a href="{{ url_for('registro') }}" class="link-btn primary">
+                <i class="fas fa-user-plus"></i> Crear cuenta nueva
+            </a>
+            <a href="{{ url_for('recuperar_contraseña') }}" class="link-btn">
+                <i class="fas fa-key"></i> Olvidé mi contraseña
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function verPass() {
+        const inp = document.getElementById('passLogin');
+        const ico = document.getElementById('ojoIcon');
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        ico.classList.toggle('fa-eye');
+        ico.classList.toggle('fa-eye-slash');
+    }
+    document.getElementById('loginForm').addEventListener('submit', function() {
+        const btn = document.getElementById('btnEntrar');
+        document.getElementById('btnTxt').style.display = 'none';
+        document.getElementById('spinner').style.display = 'block';
+        btn.disabled = true;
+    });
+</script>
+</body>
+</html>
